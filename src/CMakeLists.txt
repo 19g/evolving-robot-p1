@@ -1,3 +1,3 @@
 project(src)
 
-add_executable(physics-sim main.cpp main.hpp)
+add_executable(physics-sim simulate.cpp simulate.hpp)

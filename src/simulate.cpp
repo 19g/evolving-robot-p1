@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <ctime>
-#include "main.hpp"
+#include "simulate.hpp"
 
 using namespace std;
 

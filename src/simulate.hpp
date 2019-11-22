@@ -1,5 +1,5 @@
-#ifndef PHYSICS_SIM_MAIN_HPP
-#define PHYSICS_SIM_MAIN_HPP
+#ifndef EVOLVING_ROBOT_SIMULATE_HPP
+#define EVOLVING_ROBOT_SIMULATE_HPP
 
 using namespace std;
 #include <vector>
@@ -68,4 +68,4 @@ void breathing_cube(vector<Spring> &, double);
 
 
 
-#endif //PHYSICS_SIM_MAIN_HPP
+#endif //EVOLVING_ROBOT_SIMULATE_HPP
