@@ -1,3 +1,3 @@
 project(src)
 
-add_executable(physics-sim simulate.cpp simulate.hpp)
+add_executable(physics-sim geneticalgorithm.cpp geneticalgorithm.hpp simulate.cpp simulate.hpp)

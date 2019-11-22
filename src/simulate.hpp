@@ -42,6 +42,8 @@ struct Spring {
     int m2; // index of second mass object in spring
 };
 
+// perform the physics simulation
+double simulation_loop();
 // initialize cube with masses and springs
 void initialize_cube(vector<Mass> &, vector<Spring> &);
 // calculate distance between two points

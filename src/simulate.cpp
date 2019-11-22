@@ -5,8 +5,7 @@
 
 using namespace std;
 
-int main() {
-
+double simulation_loop() {
     // initialize files
     ofstream energy_file;
     energy_file.open(ENERGY_TXT);
