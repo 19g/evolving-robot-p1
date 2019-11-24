@@ -32,6 +32,7 @@ using namespace std;
 struct Cube {
     vector<Mass> mass;
     vector<Spring> spring;
+    double fitness;
 };
 
 // where all the GA stuff happens

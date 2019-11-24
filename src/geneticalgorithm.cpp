@@ -54,6 +54,12 @@ void loop() {
             mutation(children[i]);
         }
 
+        // get fitness of population
+        for (int i = 0; i < POP_SIZE; i++) {
+            simulation_loop(parents[i].mass, parents[i].spring);
+            simulation_loop(children[i].mass, children[i].spring);
+        }
+
         // selection
         tournament_selection(parents, children);
 
@@ -194,7 +200,9 @@ void mutation(Cube &individual) {
 }
 
 void tournament_selection(vector<Cube> &parents, vector<Cube> &children) {
-
+    // take elite children;
+    int best_parent_index;
+    int best_child_index;
 }
 
 

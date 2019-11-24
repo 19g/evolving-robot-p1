@@ -5,7 +5,7 @@
 
 using namespace std;
 
-double simulation_loop(vector<Mass> &mass, vector<Spring> &spring) {
+double simulation_loop(Cube &individual) {
     // initialize files
     ofstream energy_file;
     energy_file.open(ENERGY_TXT);
@@ -14,8 +14,11 @@ double simulation_loop(vector<Mass> &mass, vector<Spring> &spring) {
 
     // declare variables
     double T = 0.0;
+    vector<Mass> mass = individual.mass;
+    vector<Spring> spring = individual.spring;
     vector<double> kinetic_energy;
     vector<double> potential_energy;
+    vector<double> starting_position(DIMENSIONS);
 
 //    for (int i = 0; i < NUM_OF_MASSES; i++) {
 //        cout << mass[i].p[0] << "\t";
