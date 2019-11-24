@@ -9,6 +9,8 @@
 using namespace std;
 
 int main() {
+    srand(time(nullptr));
+
     // use threads for performance
     thread t[NUM_OF_TRIALS];
     for (int i = 0; i < NUM_OF_TRIALS; i++) {
@@ -25,19 +27,35 @@ void loop() {
     // begin timer
     clock_t begin = clock();
 
-    // initialize population randomly
-    vector<Cube> population(POP_SIZE);
+    // initialize parent population randomly
+    vector<Cube> parents(POP_SIZE);
     for (int i = 0; i < POP_SIZE; i++) {
         Cube temp = initialize_cube();
-        population[i] = temp;
+        parents[i] = temp;
     }
 
     for (int i = 0; i < POP_SIZE; i++) {
-        print_mass(population[i].mass[0]);
+        print_mass(parents[i].mass[0]);
     }
     // evolutionary loop
-    for (int iteration = 0; iteration < NUM_OF_ITERATIONS; iteration++) {
+    for (int eval = 0; eval < NUM_OF_EVALS; eval++) {
+        // get random order of individuals for crossover
+        vector<int> order = randomize_array_of_springs();
+        // initialize offspring
+        vector<Cube> children(parents);
 
+        // crossover
+        for (int i = 0; i < POP_SIZE; i++) {
+            crossover(parents[order[i]], parents[order[i+1]]);
+        }
+
+        // mutation
+        for (int i = 0; i < POP_SIZE; i++) {
+            mutation(children[i]);
+        }
+
+        // selection
+        tournament_selection(parents, children);
 
 
     }
@@ -122,3 +140,75 @@ Cube initialize_cube() {
 
     return cube;
 }
+
+vector<int> randomize_array_of_springs() {
+    // create vector with order of parents to be crossed over
+    vector<int> order(NUM_OF_SPRINGS);
+    for (int i = 0; i < NUM_OF_SPRINGS; i++) {
+        order[i] = i;
+    }
+    for (int i = order.size() - 1; i > 0; i--) {
+        int j = (int)(rand() % (i+1));
+        int temp = order[i];
+        order[i] = order[j];
+        order[j] = temp;
+    }
+
+    return order;
+}
+
+void crossover(Cube &A, Cube &B) {
+    // choose random points for crossover
+    int start = rand() % NUM_OF_SPRINGS;
+    int end = rand() % NUM_OF_SPRINGS;
+    while (end == start) {
+        end = rand() % NUM_OF_SPRINGS;
+    }
+
+    // swap the spring values at that point
+    for (int i = start; i < end; i++) {
+        Spring temp = A.spring[i];
+        A.spring[i] = B.spring[i];
+        B.spring[i] = temp;
+    }
+}
+
+void mutation(Cube &individual) {
+    // random variable generation
+    random_device rd;
+    mt19937 mt(rd());
+    uniform_real_distribution<double> mut_chance(0, 1);
+
+    for (int i = 0; i < NUM_OF_SPRINGS; i++) {
+        if (mut_chance(mt) < PROB_OF_MUT) {
+            uniform_real_distribution<int> spring(0, NUM_OF_SPRINGS);
+            uniform_real_distribution<double> swing(MIN_SWING, MAX_SWING);
+            individual.spring[spring(mt)].a =  individual.spring[spring(mt)].a * swing(mt);
+            individual.spring[spring(mt)].b =  individual.spring[spring(mt)].b * swing(mt);
+            individual.spring[spring(mt)].c =  individual.spring[spring(mt)].c * swing(mt);
+            individual.spring[spring(mt)].d =  individual.spring[spring(mt)].d * swing(mt);
+            individual.spring[spring(mt)].e =  individual.spring[spring(mt)].e * swing(mt);
+            individual.spring[spring(mt)].k =  individual.spring[spring(mt)].k * swing(mt);
+        }
+    }
+}
+
+void tournament_selection(vector<Cube> &parents, vector<Cube> &children) {
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
