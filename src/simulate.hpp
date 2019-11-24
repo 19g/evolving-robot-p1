@@ -8,8 +8,8 @@ using namespace std;
 // cube variables
 #define WEIGHT_PER_MASS 0.1
 #define L0_SIDE 0.1
-#define K_SPRING 1000.0
-#define INITIAL_HEIGHT 2.0
+//#define K_SPRING 1000.0
+//#define INITIAL_HEIGHT 2.0
 #define NUM_OF_MASSES 8
 #define NUM_OF_SPRINGS 28
 #define DIMENSIONS 3
@@ -18,7 +18,7 @@ using namespace std;
 #define G 9.807
 #define K_GROUND 100000.0
 #define DT 0.0001
-#define V_DAMP_CONST 1 //0.999999
+#define V_DAMP_CONST 0.999999 //0.999999
 #define NUM_OF_ITERATIONS 20000
 
 // opengl
@@ -40,10 +40,15 @@ struct Spring {
     double l0; // original rest length in m
     int m1; // index of first mass object in spring
     int m2; // index of second mass object in spring
+    double a; // a + b*sin(wt+c) + d*sin(2wt+e)
+    double b; // a + b*sin(wt+c) + d*sin(2wt+e)
+    double c; // a + b*sin(wt+c) + d*sin(2wt+e)
+    double d; // a + b*sin(wt+c) + d*sin(2wt+e)
+    double e; // a + b*sin(wt+c) + d*sin(2wt+e)
 };
 
 // perform the physics simulation
-double simulation_loop();
+double simulation_loop(vector<Mass> &, vector<Spring> &);
 // initialize cube with masses and springs
 void initialize_cube(vector<Mass> &, vector<Spring> &);
 // calculate distance between two points
@@ -61,7 +66,7 @@ double calculate_potential_energy(vector<Mass> &, vector<Spring> &);
 // calculate kinetic energy of cube
 double calculate_kinetic_energy(vector<Mass> &, vector<Spring> &);
 // print mass object
-void print_mass(vector<Mass> &, int);
+void print_mass(Mass &);
 // write to opengl file
 void write_to_opengl_file(vector<Mass> &, ofstream &);
 // breathing cube function
