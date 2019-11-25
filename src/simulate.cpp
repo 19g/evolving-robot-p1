@@ -26,6 +26,9 @@ double simulation_loop(Cube &individual) {
 //        cout << mass[i].p[2] << "\t\n";
 //    }
 
+    // Calculate starting center of mass:
+    vector<double> starting_com = calculate_center_of_mass(mass);
+
     // simulation loop
     for (int iteration = 0; iteration < NUM_OF_ITERATIONS; iteration++) {
         // initialize force vector
@@ -56,6 +59,17 @@ double simulation_loop(Cube &individual) {
         // update time
         T += DT;
     }
+
+    // Calculate center of mass after NUM_OF_ITERATIONS iterations:
+    vector<double> ending_com = calculate_center_of_mass(mass);
+
+    // Calculate total distance travelled and its x componenet:
+    double dist_travelled = dist(starting_com, ending_com);
+    double dist_travelled_x = ending_com[X] - starting_com[X];
+
+    // assign fitness equal to distance travelled in the positive x direction
+    // TODO: maybe change later to be a function of dist_travelled as well?
+    individual.fitness = dist_travelled_x;
 
     // write energy to file
     for (int i = 0; i < kinetic_energy.size(); i++) {
@@ -203,3 +217,33 @@ void breathing_cube(vector<Spring> &spring, double T) {
                        + spring[i].d * sin(2 * OMEGA * T + spring[i].e);
     }
 }
+
+/* 
+ * returns by value a vector of size 3 containing the center of mass of the 
+ * masses passed to this function
+ */
+vector<double> calculate_center_of_mass(vector<Mass> &masses) {
+    double total_mass = 0.0;
+    double pos_x = 0.0;
+    double pos_y = 0.0;
+    double pos_z = 0.0;
+
+    for (int i=0; i<masses.size(); i++) {
+        total_mass += masses[i].m;
+        pos_x += masses[i].m * masses[i].p[X];
+        pos_y += masses[i].m * masses[i].p[Y];
+        pos_z += masses[i].m * masses[i].p[Z];
+    }
+
+    pos_x /= total_mass;
+    pos_y /= total_mass;
+    pos_z /= total_mass;
+
+    vector<double> com;
+    com.push_back(pos_x);
+    com.push_back(pos_y);
+    com.push_back(pos_z);
+
+    return com;
+}
+
