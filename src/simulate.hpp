@@ -50,8 +50,14 @@ struct Spring {
     double e; // a + b*sin(wt+c) + d*sin(2wt+e)
 };
 
+struct Cube {
+    vector<Mass> mass;
+    vector<Spring> spring;
+    double fitness;
+};
+
 // perform the physics simulation
-double simulation_loop(vector<Mass> &, vector<Spring> &);
+double simulation_loop(Cube &);
 // initialize cube with masses and springs
 void initialize_cube(vector<Mass> &, vector<Spring> &);
 // calculate distance between two 3D points
