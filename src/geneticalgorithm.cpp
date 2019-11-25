@@ -34,9 +34,9 @@ void loop() {
         parent[i] = temp;
     }
 
-    for (int i = 0; i < POP_SIZE; i++) {
-        print_mass(parent[i].mass[0]);
-    }
+//    for (int i = 0; i < POP_SIZE; i++) {
+//        print_mass(parent[i].mass[0]);
+//    }
     // evolutionary loop
     for (int eval = 0; eval < NUM_OF_EVALS; eval++) {
         // get random order of individuals for crossover
@@ -44,8 +44,10 @@ void loop() {
         // initialize offspring
         vector<Cube> child(parent);
 
+        cout << "\n";
         // crossover
-        for (int i = 0; i < POP_SIZE; i++) {
+        for (int i = 0; i < POP_SIZE; i += 2) {
+            cout << order[i] << ", " << order[i+1] << "\n";
             crossover(parent[order[i]], parent[order[i+1]]);
         }
 
@@ -53,6 +55,8 @@ void loop() {
         for (int i = 0; i < POP_SIZE; i++) {
             mutation(child[i]);
         }
+
+        print_mass(child[0].mass[0]);
 
         // get fitness of population
         for (int i = 0; i < POP_SIZE; i++) {
@@ -66,7 +70,7 @@ void loop() {
             all[i] = parent[i];
         }
         for (int i = POP_SIZE; i < POP_SIZE * 2; i++) {
-            all[i] = child[i];
+            all[i] = child[i - POP_SIZE];
 
         }
         tournament_selection(parent, child, all);
@@ -159,8 +163,8 @@ Cube initialize_cube() {
 
 vector<int> randomize_array_of_springs() {
     // create vector with order of parent to be crossed over
-    vector<int> order(NUM_OF_SPRINGS);
-    for (int i = 0; i < NUM_OF_SPRINGS; i++) {
+    vector<int> order(POP_SIZE);
+    for (int i = 0; i < POP_SIZE; i++) {
         order[i] = i;
     }
     for (int i = order.size() - 1; i > 0; i--) {

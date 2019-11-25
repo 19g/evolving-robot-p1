@@ -1,7 +1,6 @@
 #ifndef EVOLVING_ROBOT_SIMULATE_HPP
 #define EVOLVING_ROBOT_SIMULATE_HPP
 
-using namespace std;
 #include <vector>
 #include <cmath>
 
@@ -19,7 +18,7 @@ using namespace std;
 #define K_GROUND 100000.0
 #define DT 0.0001
 #define V_DAMP_CONST 0.999999 //0.999999
-#define NUM_OF_ITERATIONS 20000
+#define NUM_OF_ITERATIONS 1000
 #define X 0
 #define Y 1
 #define Z 2
@@ -33,9 +32,9 @@ using namespace std;
 
 struct Mass {
     double m; // mass in kg
-    vector<double> p; // position vector in m
-    vector<double> v; // velocity vector in m/s
-    vector<double> a; // acceleration vector in m/s^2
+    std::vector<double> p; // position std::vector in m
+    std::vector<double> v; // velocity std::vector in m/s
+    std::vector<double> a; // acceleration std::vector in m/s^2
 };
 
 struct Spring {
@@ -51,38 +50,38 @@ struct Spring {
 };
 
 struct Cube {
-    vector<Mass> mass;
-    vector<Spring> spring;
+    std::vector<Mass> mass;
+    std::vector<Spring> spring;
     double fitness;
 };
 
 // perform the physics simulation
-double simulation_loop(Cube &);
+void simulation_loop(Cube &);
 // initialize cube with masses and springs
-void initialize_cube(vector<Mass> &, vector<Spring> &);
+void initialize_cube(std::vector<Mass> &, std::vector<Spring> &);
 // calculate distance between two 3D points
-double dist(vector<double>, vector<double>);
+double dist(std::vector<double>, std::vector<double>);
 // calculate force from springs, gravity
-void calculate_force(vector<Mass> &, vector<Spring> &, vector<vector<double>> &);
+void calculate_force(std::vector<Mass> &, std::vector<Spring> &, std::vector<std::vector<double>> &);
 // add external forces
-void add_external_force(vector<Mass> &, vector<Spring> &, vector<vector<double>> &);
+void add_external_force(std::vector<Mass> &, std::vector<Spring> &, std::vector<std::vector<double>> &);
 // add force due to ground
-void add_ground_force(vector<Mass> &, vector<Spring> &, vector<vector<double>> &);
+void add_ground_force(std::vector<Mass> &, std::vector<Spring> &, std::vector<std::vector<double>> &);
 // update position of masses due to force
-void update_position(vector<Mass> &, vector<Spring> &, vector<vector<double>> &);
+void update_position(std::vector<Mass> &, std::vector<Spring> &, std::vector<std::vector<double>> &);
 // calculate total energy of cube
-double calculate_potential_energy(vector<Mass> &, vector<Spring> &);
+double calculate_potential_energy(std::vector<Mass> &, std::vector<Spring> &);
 // calculate kinetic energy of cube
-double calculate_kinetic_energy(vector<Mass> &, vector<Spring> &);
+double calculate_kinetic_energy(std::vector<Mass> &, std::vector<Spring> &);
 // print mass object
 void print_mass(Mass &);
 // write to opengl file
-void write_to_opengl_file(vector<Mass> &, ofstream &);
+void write_to_opengl_file(std::vector<Mass> &, std::ofstream &);
 // breathing cube function
-void breathing_cube(vector<Spring> &, double);
+void breathing_cube(std::vector<Spring> &, double);
 
-// calculate center of mass of a vector of masses:
-vector<double> calculate_center_of_mass(vector<Mass> &);
+// calculate center of mass of a std::vector of masses:
+std::vector<double> calculate_center_of_mass(std::vector<Mass> &);
 
 
 #endif //EVOLVING_ROBOT_SIMULATE_HPP

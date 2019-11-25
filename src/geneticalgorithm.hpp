@@ -1,14 +1,12 @@
-#ifndef PHYSICS_SIM_GENETIC_ALGORITHM_HPP
-#define PHYSICS_SIM_GENETIC_ALGORITHM_HPP
-
-using namespace std;
+#ifndef EVOLVING_ROBOT_GENETIC_ALGORITHM_HPP
+#define EVOLVING_ROBOT_GENETIC_ALGORITHM_HPP
 
 #include "simulate.hpp"
 
 // program constants
-#define NUM_OF_TRIALS 10
-#define POP_SIZE 30
-#define NUM_OF_EVALS 10000
+#define NUM_OF_TRIALS 1
+#define POP_SIZE 10 // needs to be even number
+#define NUM_OF_EVALS 1000
 
 // spring macros
 #define MIN_K_SPRING 100
@@ -33,18 +31,18 @@ using namespace std;
 
 /*
 struct Cube {
-    vector<Mass> mass;
-    vector<Spring> spring;
+    std::vector<Mass> mass;
+    std::vector<Spring> spring;
     double fitness;
 };*/
 
 // where all the GA stuff happens
 void loop();
 Cube initialize_cube();
-vector<int> randomize_array_of_springs();
+std::vector<int> randomize_array_of_springs();
 void crossover(Cube &, Cube &);
 void mutation(Cube &);
-void tournament_selection(vector<Cube> &, vector<Cube> &, vector<Cube> &);
+void tournament_selection(std::vector<Cube> &, std::vector<Cube> &, std::vector<Cube> &);
 
 
-#endif //PHYSICS_SIM_GENETICALGORITHM_HPP
+#endif //EVOLVING_ROBOT_GENETIC_ALGORITHM_HPP
