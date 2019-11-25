@@ -20,6 +20,9 @@ using namespace std;
 #define DT 0.0001
 #define V_DAMP_CONST 0.999999 //0.999999
 #define NUM_OF_ITERATIONS 20000
+#define X 0
+#define Y 1
+#define Z 2
 
 // opengl
 #define NUM_OPEN_GL_CUBE_PTS 36
@@ -51,7 +54,7 @@ struct Spring {
 double simulation_loop(vector<Mass> &, vector<Spring> &);
 // initialize cube with masses and springs
 void initialize_cube(vector<Mass> &, vector<Spring> &);
-// calculate distance between two points
+// calculate distance between two 3D points
 double dist(vector<double>, vector<double>);
 // calculate force from springs, gravity
 void calculate_force(vector<Mass> &, vector<Spring> &, vector<vector<double>> &);
@@ -72,7 +75,9 @@ void write_to_opengl_file(vector<Mass> &, ofstream &);
 // breathing cube function
 void breathing_cube(vector<Spring> &, double);
 
-
+// calculate center of mass of a vector of masses:
+vector<double> calculate_center_of_mass(vector<Mass> &);
 
 
 #endif //EVOLVING_ROBOT_SIMULATE_HPP
+
