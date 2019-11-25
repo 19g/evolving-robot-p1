@@ -28,42 +28,52 @@ void loop() {
     clock_t begin = clock();
 
     // initialize parent population randomly
-    vector<Cube> parents(POP_SIZE);
+    vector<Cube> parent(POP_SIZE);
     for (int i = 0; i < POP_SIZE; i++) {
         Cube temp = initialize_cube();
-        parents[i] = temp;
+        parent[i] = temp;
     }
 
     for (int i = 0; i < POP_SIZE; i++) {
-        print_mass(parents[i].mass[0]);
+        print_mass(parent[i].mass[0]);
     }
     // evolutionary loop
     for (int eval = 0; eval < NUM_OF_EVALS; eval++) {
         // get random order of individuals for crossover
         vector<int> order = randomize_array_of_springs();
         // initialize offspring
-        vector<Cube> children(parents);
+        vector<Cube> child(parent);
 
         // crossover
         for (int i = 0; i < POP_SIZE; i++) {
-            crossover(parents[order[i]], parents[order[i+1]]);
+            crossover(parent[order[i]], parent[order[i+1]]);
         }
 
         // mutation
         for (int i = 0; i < POP_SIZE; i++) {
-            mutation(children[i]);
+            mutation(child[i]);
         }
 
         // get fitness of population
         for (int i = 0; i < POP_SIZE; i++) {
-            simulation_loop(parents[i].mass, parents[i].spring);
-            simulation_loop(children[i].mass, children[i].spring);
+            simulation_loop(parent[i].mass, parent[i].spring);
+            simulation_loop(child[i].mass, child[i].spring);
         }
 
         // selection
-        tournament_selection(parents, children);
+        vector<Cube> all(POP_SIZE * 2);
+        for (int i = 0; i < POP_SIZE; i++) {
+            all[i] = parent[i];
+        }
+        for (int i = POP_SIZE; i < POP_SIZE * 2; i++) {
+            all[i] = child[i];
 
+        }
+        tournament_selection(parent, child, all);
 
+        if (eval == 10 * POP_SIZE) {
+            cout << "Best fitness: " << parent[0].fitness << "\n";
+        }
     }
 
     // end timer
@@ -148,7 +158,7 @@ Cube initialize_cube() {
 }
 
 vector<int> randomize_array_of_springs() {
-    // create vector with order of parents to be crossed over
+    // create vector with order of parent to be crossed over
     vector<int> order(NUM_OF_SPRINGS);
     for (int i = 0; i < NUM_OF_SPRINGS; i++) {
         order[i] = i;
@@ -187,7 +197,7 @@ void mutation(Cube &individual) {
 
     for (int i = 0; i < NUM_OF_SPRINGS; i++) {
         if (mut_chance(mt) < PROB_OF_MUT) {
-            uniform_real_distribution<int> spring(0, NUM_OF_SPRINGS);
+            uniform_int_distribution<> spring(0, NUM_OF_SPRINGS);
             uniform_real_distribution<double> swing(MIN_SWING, MAX_SWING);
             individual.spring[spring(mt)].a =  individual.spring[spring(mt)].a * swing(mt);
             individual.spring[spring(mt)].b =  individual.spring[spring(mt)].b * swing(mt);
@@ -199,10 +209,39 @@ void mutation(Cube &individual) {
     }
 }
 
-void tournament_selection(vector<Cube> &parents, vector<Cube> &children) {
-    // take elite children;
-    int best_parent_index;
-    int best_child_index;
+void tournament_selection(vector<Cube> &parent, vector<Cube> &child, vector<Cube> &all) {
+    // random variable generation
+    random_device rd;
+    mt19937 mt(rd());
+    uniform_int_distribution<> compare(0, POP_SIZE*2);
+
+    // take elite child;
+    int best_parent_index = 0;
+    int best_child_index = 0;
+    for (int i = 0; i < POP_SIZE; i++) {
+        if (parent[i].fitness > parent[best_parent_index].fitness) {
+            best_parent_index = i;
+        }
+        if (child[i].fitness > child[best_child_index].fitness) {
+            best_child_index = i;
+        }
+    }
+    parent[0] = parent[best_parent_index];
+    parent[1] = child[best_child_index];
+
+    for (int i = 2; i < POP_SIZE; i++) {
+        int m = compare(mt);
+        int n = compare(mt);
+        while (m == n) {
+            n = compare(mt);
+        }
+
+        if (all[m].fitness > all[n].fitness) {
+            parent[i] = all[m];
+        } else {
+            parent[i] = all[n];
+        }
+    }
 }
 
 

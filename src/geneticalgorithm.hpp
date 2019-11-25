@@ -41,7 +41,7 @@ Cube initialize_cube();
 vector<int> randomize_array_of_springs();
 void crossover(Cube &, Cube &);
 void mutation(Cube &);
-void tournament_selection(vector<Cube> &, vector<Cube> &);
+void tournament_selection(vector<Cube> &, vector<Cube> &, vector<Cube> &);
 
 
 #endif //PHYSICS_SIM_GENETICALGORITHM_HPP
