@@ -56,8 +56,8 @@ void loop() {
 
         // get fitness of population
         for (int i = 0; i < POP_SIZE; i++) {
-            simulation_loop(parent[i].mass, parent[i].spring);
-            simulation_loop(child[i].mass, child[i].spring);
+            simulation_loop(parent[i]);
+            simulation_loop(child[i]);
         }
 
         // selection

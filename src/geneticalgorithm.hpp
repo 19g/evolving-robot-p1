@@ -3,6 +3,8 @@
 
 using namespace std;
 
+#include "simulate.hpp"
+
 // program constants
 #define NUM_OF_TRIALS 10
 #define POP_SIZE 30
@@ -29,11 +31,12 @@ using namespace std;
 #define MIN_SWING 0.8
 #define MAX_SWING 1.2
 
+/*
 struct Cube {
     vector<Mass> mass;
     vector<Spring> spring;
     double fitness;
-};
+};*/
 
 // where all the GA stuff happens
 void loop();
