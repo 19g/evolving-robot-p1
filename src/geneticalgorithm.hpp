@@ -5,29 +5,31 @@
 
 // program constants
 #define NUM_OF_TRIALS 1
-#define POP_SIZE 10 // needs to be even number
+#define POP_SIZE 30 // needs to be even number
 #define NUM_OF_EVALS 1000
+
+// global macros
+#define PI 3.14159
+#define OMEGA (4*PI)
+#define INITIAL_HEIGHT 0.02
+#define PROB_OF_MUT 0.1
+#define MIN_SWING 0.8
+#define MAX_SWING 1.2
 
 // spring macros
 #define MIN_K_SPRING 100
 #define MAX_K_SPRING 1000000
 #define MIN_A 0
-#define MAX_A 2*L0_SIDE
+#define MAX_A (2*L0_SIDE)
 #define MIN_B 0
-#define MAX_B 1
+#define MAX_B 5
 #define MIN_C 0
-#define MAX_C 1
+#define MAX_C (2*PI)
 #define MIN_D 0
 #define MAX_D 1
 #define MIN_E 0
 #define MAX_E 1
 
-// global macros
-#define OMEGA 3.14159
-#define INITIAL_HEIGHT 0.02
-#define PROB_OF_MUT 0.1
-#define MIN_SWING 0.8
-#define MAX_SWING 1.2
 
 /*
 struct Cube {

@@ -1,5 +1,7 @@
-To-Do
-- alter simulation_loop definition to take correct parameters for robot (cube)
+#README.MD
+###To-Do
+*High Priority*
+- add friction
+
+*Low Priority*
 - thread stuff
-- add friction?
-- turn on dampening

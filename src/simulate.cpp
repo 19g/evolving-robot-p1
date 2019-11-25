@@ -7,10 +7,10 @@ using namespace std;
 
 void simulation_loop(Cube &individual) {
     // initialize files
-    ofstream energy_file;
-    energy_file.open(ENERGY_TXT);
-    ofstream opengl_file;
-    opengl_file.open(OPENGL_TXT);
+//    ofstream energy_file;
+//    energy_file.open(ENERGY_TXT);
+//    ofstream opengl_file;
+//    opengl_file.open(OPENGL_TXT);
 
     // declare variables
     double T = 0.0;
@@ -47,14 +47,14 @@ void simulation_loop(Cube &individual) {
         kinetic_energy.emplace_back(calculate_kinetic_energy(mass, spring));
         potential_energy.emplace_back(calculate_potential_energy(mass, spring));
 
-        cout << "T: " << T << "\n";
+//        cout << "T: " << T << "\n";
 //        for (int i = 0; i < NUM_OF_MASSES; i++) {
 //            print_mass(mass, 0);
 //        }
-        cout << "e: " << kinetic_energy[iteration] + potential_energy[iteration] << "\n\n";
+//        cout << "e: " << kinetic_energy[iteration] + potential_energy[iteration] << "\n\n";
 
         // write to file for opengl
-        write_to_opengl_file(mass, opengl_file);
+//        write_to_opengl_file(mass, opengl_file);
 
         // update time
         T += DT;
@@ -72,29 +72,29 @@ void simulation_loop(Cube &individual) {
     individual.fitness = dist_travelled_x;
 
     // write energy to file
-    for (int i = 0; i < kinetic_energy.size(); i++) {
-        energy_file << kinetic_energy[i];
-        if (i + 1 < kinetic_energy.size()) {
-            energy_file << ",";
-        }
-    }
-    energy_file << "\n";
-    for (int i = 0; i < potential_energy.size(); i++) {
-        energy_file << potential_energy[i];
-        if (i + 1 < potential_energy.size()) {
-            energy_file << ",";
-        }
-    }
-    energy_file << "\n";
-    for (int i = 0; i < potential_energy.size(); i++) {
-        energy_file << kinetic_energy[i] + potential_energy[i];
-        if (i + 1 < potential_energy.size()) {
-            energy_file << ",";
-        }
-    }
-
-    opengl_file.close();
-    energy_file.close();
+//    for (int i = 0; i < kinetic_energy.size(); i++) {
+//        energy_file << kinetic_energy[i];
+//        if (i + 1 < kinetic_energy.size()) {
+//            energy_file << ",";
+//        }
+//    }
+//    energy_file << "\n";
+//    for (int i = 0; i < potential_energy.size(); i++) {
+//        energy_file << potential_energy[i];
+//        if (i + 1 < potential_energy.size()) {
+//            energy_file << ",";
+//        }
+//    }
+//    energy_file << "\n";
+//    for (int i = 0; i < potential_energy.size(); i++) {
+//        energy_file << kinetic_energy[i] + potential_energy[i];
+//        if (i + 1 < potential_energy.size()) {
+//            energy_file << ",";
+//        }
+//    }
+//
+//    opengl_file.close();
+//    energy_file.close();
 }
 
 double dist(vector<double> a, vector<double> b) {
@@ -213,8 +213,7 @@ void write_to_opengl_file(vector<Mass> &mass, ofstream &opengl_file) {
 
 void breathing_cube(vector<Spring> &spring, double T) {
     for (int i = 0; i < NUM_OF_SPRINGS; i++) {
-        spring[i].l0 = spring[i].a + spring[i].b * sin(OMEGA * T + spring[i].c)
-                       + spring[i].d * sin(2 * OMEGA * T + spring[i].e);
+        spring[i].l0 = spring[i].a + spring[i].b * sin(OMEGA * T + spring[i].c);
     }
 }
 

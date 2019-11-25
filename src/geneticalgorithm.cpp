@@ -34,11 +34,15 @@ void loop() {
         parent[i] = temp;
     }
 
+    for (int i = 0; i < POP_SIZE; i++) {
+        simulation_loop(parent[i]);
+    }
+
 //    for (int i = 0; i < POP_SIZE; i++) {
 //        print_mass(parent[i].mass[0]);
 //    }
     // evolutionary loop
-    for (int eval = 0; eval < NUM_OF_EVALS; eval++) {
+    for (int eval = 0; eval < NUM_OF_EVALS; eval+=POP_SIZE) {
         // get random order of individuals for crossover
         vector<int> order = randomize_array_of_springs();
         // initialize offspring
@@ -47,8 +51,7 @@ void loop() {
         cout << "\n";
         // crossover
         for (int i = 0; i < POP_SIZE; i += 2) {
-            cout << order[i] << ", " << order[i+1] << "\n";
-            crossover(parent[order[i]], parent[order[i+1]]);
+            crossover(child[order[i]], child[order[i+1]]);
         }
 
         // mutation
@@ -56,11 +59,8 @@ void loop() {
             mutation(child[i]);
         }
 
-        print_mass(child[0].mass[0]);
-
         // get fitness of population
         for (int i = 0; i < POP_SIZE; i++) {
-            simulation_loop(parent[i]);
             simulation_loop(child[i]);
         }
 
@@ -75,8 +75,8 @@ void loop() {
         }
         tournament_selection(parent, child, all);
 
-        if (eval == 10 * POP_SIZE) {
-            cout << "Best fitness: " << parent[0].fitness << "\n";
+        if (eval % 1 == 0) {
+            cout << eval << ": " << parent[0].fitness << "\n";
         }
     }
 
@@ -218,7 +218,7 @@ void tournament_selection(vector<Cube> &parent, vector<Cube> &child, vector<Cube
     // random variable generation
     random_device rd;
     mt19937 mt(rd());
-    uniform_int_distribution<> compare(0, POP_SIZE*2);
+    uniform_int_distribution<> compare(0, POP_SIZE * 2 - 1);
 
     // take elite child;
     int best_parent_index = 0;

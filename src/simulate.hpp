@@ -18,7 +18,7 @@
 #define K_GROUND 100000.0
 #define DT 0.0001
 #define V_DAMP_CONST 0.999999 //0.999999
-#define NUM_OF_ITERATIONS 1000
+#define NUM_OF_ITERATIONS 30000
 #define X 0
 #define Y 1
 #define Z 2
