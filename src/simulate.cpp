@@ -226,7 +226,7 @@ vector<double> calculate_center_of_mass(vector<Mass> &masses) {
     double total_mass = 0.0;
     double pos_x = 0.0;
     double pos_y = 0.0;
-    double pox_z = 0.0;
+    double pos_z = 0.0;
 
     for (int i=0; i<masses.size(); i++) {
         total_mass += masses[i].m;
@@ -239,7 +239,7 @@ vector<double> calculate_center_of_mass(vector<Mass> &masses) {
     pos_y /= total_mass;
     pos_z /= total_mass;
 
-    vector<double> com();
+    vector<double> com;
     com.push_back(pos_x);
     com.push_back(pos_y);
     com.push_back(pos_z);
