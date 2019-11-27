@@ -4,7 +4,7 @@
 #include <random>
 #include <vector>
 #include "simulate.hpp"
-#include "geneticalgorithm.hpp"
+#include "randomsearch.hpp"
 
 using namespace std;
 
@@ -14,7 +14,7 @@ int main() {
     // use threads for performance
     thread t[NUM_OF_TRIALS];
     for (int i = 0; i < NUM_OF_TRIALS; i++) {
-        t[i] = thread(loop);
+        t[i] = thread(random_search);
     }
     for (int i = 0; i < NUM_OF_TRIALS; i++) {
         t[i].join();
@@ -23,67 +23,27 @@ int main() {
     return 0;
 }
 
-void loop() {
+void random_search() {
     // begin timer
     clock_t begin = clock();
 
-    // random variable generation
-    random_device rd;
-    mt19937 mt(rd());
-    uniform_real_distribution<double> b_val(MIN_B, MAX_B);
-
     // initialize parent population randomly
-    vector<Cube> parent(POP_SIZE);
-    for (int i = 0; i < POP_SIZE; i++) {
-//        cout << b_val(mt) << " "<< b_val(mt) << "\n";
-        parent[i] = initialize_cube();
-        simulation_loop(parent[i], false);
+    Cube parent = initialize_cube();
+    simulation_loop(parent, false);
 
-        cout << "out: " << parent[0].fitness << "\n";
-    }
-
-//    for (int i = 0; i < POP_SIZE; i++) {
-//        print_mass(parent[i].mass[0]);
-//    }
-    // evolutionary loop
-    for (int eval = 0; eval < NUM_OF_EVALS; eval+=POP_SIZE) {
-        // get random order of individuals for crossover
-        vector<int> order = randomize_array_of_springs();
+    // random search loop
+    for (int eval = 0; eval < NUM_OF_EVALS; eval++) {
         // initialize offspring
-        vector<Cube> child(parent);
+        Cube child = initialize_cube();
+        simulation_loop(child, false);
 
-        cout << "\n";
-        // crossover
-        for (int i = 0; i < POP_SIZE; i += 2) {
-            crossover(child[order[i]], child[order[i+1]]);
+        if (parent.fitness < child.fitness) {
+            parent = child;
         }
 
-        // mutation
-        for (int i = 0; i < POP_SIZE; i++) {
-            mutation(child[i]);
+        if (eval % 1 == 0) {
+            cout << eval << ": " << parent.fitness << "\n";
         }
-
-        // get fitness of population
-        for (int i = 0; i < POP_SIZE; i++) {
-            simulation_loop(child[i], false);
-        }
-
-        // selection
-        vector<Cube> all(POP_SIZE * 2);
-        for (int i = 0; i < POP_SIZE; i++) {
-            all[i] = parent[i];
-        }
-        for (int i = POP_SIZE; i < POP_SIZE * 2; i++) {
-            all[i] = child[i - POP_SIZE];
-
-        }
-        tournament_selection(parent, child, all);
-
-//        if (eval % 1 == 0) {
-//            for (int i = 0; i < POP_SIZE; i++) {
-//                cout << eval << ": " << parent[0].fitness << "\n";
-//            }
-//        }
     }
 
     // end timer
@@ -93,7 +53,7 @@ void loop() {
     cout << "iter/sec: " << iters_per_sec << "\n";
 
     // output to file for opengl
-    simulation_loop(parent[0], true);
+    simulation_loop(parent, true);
 }
 
 Cube initialize_cube() {
@@ -163,105 +123,7 @@ Cube initialize_cube() {
     spring.emplace_back(Spring {k_spring_val(mt), dist(mass[5].p, mass[7].p), 5, 7, dist(mass[5].p, mass[7].p), b_val(mt), c_val(mt), d_val(mt), e_val(mt)});
     spring.emplace_back(Spring {k_spring_val(mt), dist(mass[6].p, mass[7].p), 6, 7, dist(mass[6].p, mass[7].p), b_val(mt), c_val(mt), d_val(mt), e_val(mt)});
 
-    Cube cube = {mass, spring, 0};
+    Cube cube = {mass, spring};
 
     return cube;
-}
-
-vector<int> randomize_array_of_springs() {
-    // create vector with order of parent to be crossed over
-    vector<int> order(POP_SIZE);
-    for (int i = 0; i < POP_SIZE; i++) {
-        order[i] = i;
-    }
-    for (int i = order.size() - 1; i > 0; i--) {
-        int j = (int)(rand() % (i+1));
-        int temp = order[i];
-        order[i] = order[j];
-        order[j] = temp;
-    }
-
-    return order;
-}
-
-void crossover(Cube &A, Cube &B) {
-    // choose random points for crossover
-    int start = rand() % NUM_OF_SPRINGS;
-    int end = rand() % NUM_OF_SPRINGS;
-    while (end == start) {
-        end = rand() % NUM_OF_SPRINGS;
-    }
-
-    // swap the spring values at that point
-    for (int i = start; i < end; i++) {
-        Spring temp = A.spring[i];
-        A.spring[i] = B.spring[i];
-        B.spring[i] = temp;
-    }
-}
-
-void mutation(Cube &individual) {
-    // random variable generation
-    // TODO: move this outside of the mutation function becasue it's probably pretty slow
-    random_device rd;
-    mt19937 mt(rd());
-    uniform_real_distribution<double> mut_chance(0, 1);
-
-    for (int i = 0; i < NUM_OF_SPRINGS; i++) {
-        if (mut_chance(mt) < PROB_OF_MUT) {
-            // pick a spring and multiply its values by numbers between MIN_SWING and MAX_SWING
-            uniform_int_distribution<> spring(0, NUM_OF_SPRINGS);
-            uniform_real_distribution<double> swing(MIN_SWING, MAX_SWING);
-//            individual.spring[spring(mt)].a =  individual.spring[spring(mt)].a * swing(mt);
-            if (mut_chance(mt) < PROB_PER_PARAM) {
-                uniform_real_distribution<double> b_val(0, individual.spring[i].a/2);
-                individual.spring[spring(mt)].b = b_val(mt);
-            }
-            if (mut_chance(mt) < PROB_PER_PARAM) {
-                uniform_real_distribution<double> c_val(MIN_C, MAX_C);
-                individual.spring[spring(mt)].c = c_val(mt);
-            }
-//            individual.spring[spring(mt)].d =  individual.spring[spring(mt)].d * swing(mt);
-//            individual.spring[spring(mt)].e =  individual.spring[spring(mt)].e * swing(mt);
-            if (mut_chance(mt) < PROB_PER_PARAM) {
-                uniform_real_distribution<double> k_val(MIN_K_SPRING, MAX_K_SPRING);
-                individual.spring[spring(mt)].k = k_val(mt);
-            }
-        }
-    }
-}
-
-void tournament_selection(vector<Cube> &parent, vector<Cube> &child, vector<Cube> &all) {
-    // random variable generation
-    random_device rd;
-    mt19937 mt(rd());
-    uniform_int_distribution<> compare(0, POP_SIZE * 2 - 1);
-
-    // take elite child;
-    int best_parent_index = 0;
-    int best_child_index = 0;
-    for (int i = 0; i < POP_SIZE; i++) {
-        if (parent[i].fitness > parent[best_parent_index].fitness) {
-            best_parent_index = i;
-        }
-        if (child[i].fitness > child[best_child_index].fitness) {
-            best_child_index = i;
-        }
-    }
-    parent[0] = parent[best_parent_index];
-    parent[1] = child[best_child_index];
-
-    for (int i = 2; i < POP_SIZE; i++) {
-        int m = compare(mt);
-        int n = compare(mt);
-        while (m == n) {
-            n = compare(mt);
-        }
-
-        if (all[m].fitness > all[n].fitness) {
-            parent[i] = all[m];
-        } else {
-            parent[i] = all[n];
-        }
-    }
 }
