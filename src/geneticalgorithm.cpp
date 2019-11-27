@@ -205,8 +205,9 @@ void mutation(Cube &individual) {
             // pick a spring and multiply its values by numbers between MIN_SWING and MAX_SWING
             uniform_int_distribution<> spring(0, NUM_OF_SPRINGS);
             uniform_real_distribution<double> swing(MIN_SWING, MAX_SWING);
+            uniform_real_distribution<double> b_val(0, individual.spring[i].a/2);
 //            individual.spring[spring(mt)].a =  individual.spring[spring(mt)].a * swing(mt);
-            //individual.spring[spring(mt)].b =  individual.spring[spring(mt)].b * swing(mt);
+            individual.spring[spring(mt)].b = b_val(mt);
             //individual.spring[spring(mt)].c =  individual.spring[spring(mt)].c * swing(mt);
 //            individual.spring[spring(mt)].d =  individual.spring[spring(mt)].d * swing(mt);
 //            individual.spring[spring(mt)].e =  individual.spring[spring(mt)].e * swing(mt);
