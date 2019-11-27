@@ -34,8 +34,11 @@ void simulation_loop(Cube &individual, bool opengl) {
         write_to_opengl_file(mass, opengl_file);
     }
 
+    int num_iterations = NUM_OF_ITERATIONS;
+    if (opengl) num_iterations *= 3;
+
     // simulation loop
-    for (int iteration = 0; iteration < NUM_OF_ITERATIONS; iteration++) {
+    for (int iteration = 0; iteration < num_iterations; iteration++) {
         // initialize force vector
         vector<vector<double>> force(NUM_OF_MASSES, vector<double>(DIMENSIONS));
 
@@ -77,6 +80,7 @@ void simulation_loop(Cube &individual, bool opengl) {
 
     // assign fitness equal to distance travelled in the positive x direction
     // TODO: maybe change later to be a function of dist_travelled as well?
+    //individual.fitness = dist_travelled - dist_travelled_z;
     individual.fitness = dist_travelled_x; // - abs(dist_travelled_z); 
 
     // write energy to file
