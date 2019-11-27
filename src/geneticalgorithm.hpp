@@ -26,18 +26,6 @@
 #define MAX_B (L0_SIDE/2)
 #define MIN_C 0
 #define MAX_C (PI/2)
-#define MIN_D 0
-#define MAX_D 1
-#define MIN_E 0
-#define MAX_E 1
-
-
-/*
-struct Cube {
-    std::vector<Mass> mass;
-    std::vector<Spring> spring;
-    double fitness;
-};*/
 
 // where all the GA stuff happens
 void loop();

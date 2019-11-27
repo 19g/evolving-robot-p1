@@ -27,19 +27,11 @@ void loop() {
     // begin timer
     clock_t begin = clock();
 
-    // random variable generation
-    random_device rd;
-    mt19937 mt(rd());
-    uniform_real_distribution<double> b_val(MIN_B, MAX_B);
-
     // initialize parent population randomly
     vector<Cube> parent(POP_SIZE);
     for (int i = 0; i < POP_SIZE; i++) {
-//        cout << b_val(mt) << " "<< b_val(mt) << "\n";
         parent[i] = initialize_cube();
         simulation_loop(parent[i], false);
-
-        cout << "out: " << parent[0].fitness << "\n";
     }
 
 //    for (int i = 0; i < POP_SIZE; i++) {
@@ -79,11 +71,11 @@ void loop() {
         }
         tournament_selection(parent, child, all);
 
-//        if (eval % 1 == 0) {
-//            for (int i = 0; i < POP_SIZE; i++) {
-//                cout << eval << ": " << parent[0].fitness << "\n";
-//            }
-//        }
+        if (eval % 1 == 0) {
+            for (int i = 0; i < POP_SIZE; i++) {
+                cout << eval << ": " << parent[i].fitness << "\n";
+            }
+        }
     }
 
     // end timer
@@ -103,8 +95,6 @@ Cube initialize_cube() {
 //    uniform_real_distribution<double> a_val(MIN_A, MAX_A);
     uniform_real_distribution<double> b_val(MIN_B, MAX_B);
     uniform_real_distribution<double> c_val(MIN_C, MAX_C);
-    uniform_real_distribution<double> d_val(MIN_D, MAX_D);
-    uniform_real_distribution<double> e_val(MIN_E, MAX_E);
     uniform_real_distribution<double> k_spring_val(MIN_K_SPRING, MAX_K_SPRING);
 
     // temp objects
@@ -134,34 +124,34 @@ Cube initialize_cube() {
     temp_mass.p = {0.0, L0_SIDE, INITIAL_HEIGHT + L0_SIDE}; // 7
     mass.emplace_back(temp_mass);
 
-    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[0].p, mass[1].p), 0, 1, dist(mass[0].p, mass[1].p), b_val(mt), c_val(mt), d_val(mt), e_val(mt)});
-    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[0].p, mass[2].p), 0, 2, dist(mass[0].p, mass[2].p), b_val(mt), c_val(mt), d_val(mt), e_val(mt)});
-    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[0].p, mass[3].p), 0, 3, dist(mass[0].p, mass[3].p), b_val(mt), c_val(mt), d_val(mt), e_val(mt)});
-    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[0].p, mass[4].p), 0, 4, dist(mass[0].p, mass[4].p), b_val(mt), c_val(mt), d_val(mt), e_val(mt)});
-    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[0].p, mass[5].p), 0, 5, dist(mass[0].p, mass[5].p), b_val(mt), c_val(mt), d_val(mt), e_val(mt)});
-    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[0].p, mass[6].p), 0, 6, dist(mass[0].p, mass[6].p), b_val(mt), c_val(mt), d_val(mt), e_val(mt)});
-    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[0].p, mass[7].p), 0, 7, dist(mass[0].p, mass[7].p), b_val(mt), c_val(mt), d_val(mt), e_val(mt)});
-    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[1].p, mass[2].p), 1, 2, dist(mass[1].p, mass[2].p), b_val(mt), c_val(mt), d_val(mt), e_val(mt)});
-    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[1].p, mass[3].p), 1, 3, dist(mass[1].p, mass[3].p), b_val(mt), c_val(mt), d_val(mt), e_val(mt)});
-    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[1].p, mass[4].p), 1, 4, dist(mass[1].p, mass[4].p), b_val(mt), c_val(mt), d_val(mt), e_val(mt)});
-    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[1].p, mass[5].p), 1, 5, dist(mass[1].p, mass[5].p), b_val(mt), c_val(mt), d_val(mt), e_val(mt)});
-    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[1].p, mass[6].p), 1, 6, dist(mass[1].p, mass[6].p), b_val(mt), c_val(mt), d_val(mt), e_val(mt)});
-    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[1].p, mass[7].p), 1, 7, dist(mass[1].p, mass[7].p), b_val(mt), c_val(mt), d_val(mt), e_val(mt)});
-    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[2].p, mass[3].p), 2, 3, dist(mass[2].p, mass[3].p), b_val(mt), c_val(mt), d_val(mt), e_val(mt)});
-    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[2].p, mass[4].p), 2, 4, dist(mass[2].p, mass[4].p), b_val(mt), c_val(mt), d_val(mt), e_val(mt)});
-    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[2].p, mass[5].p), 2, 5, dist(mass[2].p, mass[5].p), b_val(mt), c_val(mt), d_val(mt), e_val(mt)});
-    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[2].p, mass[6].p), 2, 6, dist(mass[2].p, mass[6].p), b_val(mt), c_val(mt), d_val(mt), e_val(mt)});
-    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[2].p, mass[7].p), 2, 7, dist(mass[2].p, mass[7].p), b_val(mt), c_val(mt), d_val(mt), e_val(mt)});
-    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[3].p, mass[4].p), 3, 4, dist(mass[3].p, mass[4].p), b_val(mt), c_val(mt), d_val(mt), e_val(mt)});
-    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[3].p, mass[5].p), 3, 5, dist(mass[3].p, mass[5].p), b_val(mt), c_val(mt), d_val(mt), e_val(mt)});
-    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[3].p, mass[6].p), 3, 6, dist(mass[3].p, mass[6].p), b_val(mt), c_val(mt), d_val(mt), e_val(mt)});
-    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[3].p, mass[7].p), 3, 7, dist(mass[3].p, mass[7].p), b_val(mt), c_val(mt), d_val(mt), e_val(mt)});
-    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[4].p, mass[5].p), 4, 5, dist(mass[4].p, mass[5].p), b_val(mt), c_val(mt), d_val(mt), e_val(mt)});
-    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[4].p, mass[6].p), 4, 6, dist(mass[4].p, mass[6].p), b_val(mt), c_val(mt), d_val(mt), e_val(mt)});
-    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[4].p, mass[7].p), 4, 7, dist(mass[4].p, mass[7].p), b_val(mt), c_val(mt), d_val(mt), e_val(mt)});
-    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[5].p, mass[6].p), 5, 6, dist(mass[5].p, mass[6].p), b_val(mt), c_val(mt), d_val(mt), e_val(mt)});
-    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[5].p, mass[7].p), 5, 7, dist(mass[5].p, mass[7].p), b_val(mt), c_val(mt), d_val(mt), e_val(mt)});
-    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[6].p, mass[7].p), 6, 7, dist(mass[6].p, mass[7].p), b_val(mt), c_val(mt), d_val(mt), e_val(mt)});
+    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[0].p, mass[1].p), 0, 1, dist(mass[0].p, mass[1].p), b_val(mt), c_val(mt)});
+    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[0].p, mass[2].p), 0, 2, dist(mass[0].p, mass[2].p), b_val(mt), c_val(mt)});
+    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[0].p, mass[3].p), 0, 3, dist(mass[0].p, mass[3].p), b_val(mt), c_val(mt)});
+    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[0].p, mass[4].p), 0, 4, dist(mass[0].p, mass[4].p), b_val(mt), c_val(mt)});
+    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[0].p, mass[5].p), 0, 5, dist(mass[0].p, mass[5].p), b_val(mt), c_val(mt)});
+    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[0].p, mass[6].p), 0, 6, dist(mass[0].p, mass[6].p), b_val(mt), c_val(mt)});
+    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[0].p, mass[7].p), 0, 7, dist(mass[0].p, mass[7].p), b_val(mt), c_val(mt)});
+    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[1].p, mass[2].p), 1, 2, dist(mass[1].p, mass[2].p), b_val(mt), c_val(mt)});
+    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[1].p, mass[3].p), 1, 3, dist(mass[1].p, mass[3].p), b_val(mt), c_val(mt)});
+    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[1].p, mass[4].p), 1, 4, dist(mass[1].p, mass[4].p), b_val(mt), c_val(mt)});
+    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[1].p, mass[5].p), 1, 5, dist(mass[1].p, mass[5].p), b_val(mt), c_val(mt)});
+    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[1].p, mass[6].p), 1, 6, dist(mass[1].p, mass[6].p), b_val(mt), c_val(mt)});
+    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[1].p, mass[7].p), 1, 7, dist(mass[1].p, mass[7].p), b_val(mt), c_val(mt)});
+    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[2].p, mass[3].p), 2, 3, dist(mass[2].p, mass[3].p), b_val(mt), c_val(mt)});
+    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[2].p, mass[4].p), 2, 4, dist(mass[2].p, mass[4].p), b_val(mt), c_val(mt)});
+    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[2].p, mass[5].p), 2, 5, dist(mass[2].p, mass[5].p), b_val(mt), c_val(mt)});
+    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[2].p, mass[6].p), 2, 6, dist(mass[2].p, mass[6].p), b_val(mt), c_val(mt)});
+    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[2].p, mass[7].p), 2, 7, dist(mass[2].p, mass[7].p), b_val(mt), c_val(mt)});
+    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[3].p, mass[4].p), 3, 4, dist(mass[3].p, mass[4].p), b_val(mt), c_val(mt)});
+    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[3].p, mass[5].p), 3, 5, dist(mass[3].p, mass[5].p), b_val(mt), c_val(mt)});
+    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[3].p, mass[6].p), 3, 6, dist(mass[3].p, mass[6].p), b_val(mt), c_val(mt)});
+    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[3].p, mass[7].p), 3, 7, dist(mass[3].p, mass[7].p), b_val(mt), c_val(mt)});
+    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[4].p, mass[5].p), 4, 5, dist(mass[4].p, mass[5].p), b_val(mt), c_val(mt)});
+    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[4].p, mass[6].p), 4, 6, dist(mass[4].p, mass[6].p), b_val(mt), c_val(mt)});
+    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[4].p, mass[7].p), 4, 7, dist(mass[4].p, mass[7].p), b_val(mt), c_val(mt)});
+    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[5].p, mass[6].p), 5, 6, dist(mass[5].p, mass[6].p), b_val(mt), c_val(mt)});
+    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[5].p, mass[7].p), 5, 7, dist(mass[5].p, mass[7].p), b_val(mt), c_val(mt)});
+    spring.emplace_back(Spring {k_spring_val(mt), dist(mass[6].p, mass[7].p), 6, 7, dist(mass[6].p, mass[7].p), b_val(mt), c_val(mt)});
 
     Cube cube = {mass, spring, 0};
 
@@ -221,8 +211,6 @@ void mutation(Cube &individual) {
                 uniform_real_distribution<double> c_val(MIN_C, MAX_C);
                 individual.spring[spring(mt)].c = c_val(mt);
             }
-//            individual.spring[spring(mt)].d =  individual.spring[spring(mt)].d * swing(mt);
-//            individual.spring[spring(mt)].e =  individual.spring[spring(mt)].e * swing(mt);
             if (mut_chance(mt) < PROB_PER_PARAM) {
                 uniform_real_distribution<double> k_val(MIN_K_SPRING, MAX_K_SPRING);
                 individual.spring[spring(mt)].k = k_val(mt);

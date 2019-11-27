@@ -45,8 +45,6 @@ struct Spring {
     double a; // a + b*sin(wt+c) + d*sin(2wt+e)
     double b; // a + b*sin(wt+c) + d*sin(2wt+e)
     double c; // a + b*sin(wt+c) + d*sin(2wt+e)
-    double d; // a + b*sin(wt+c) + d*sin(2wt+e)
-    double e; // a + b*sin(wt+c) + d*sin(2wt+e)
 };
 
 struct Cube {
