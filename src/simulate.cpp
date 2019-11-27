@@ -7,8 +7,8 @@ using namespace std;
 
 void simulation_loop(Cube &individual, bool opengl) {
     // initialize files
-//    ofstream energy_file;
-//    energy_file.open(ENERGY_TXT);
+    ofstream energy_file;
+    energy_file.open(ENERGY_TXT);
     ofstream opengl_file;
     opengl_file.open(OPENGL_TXT);
 
@@ -28,6 +28,11 @@ void simulation_loop(Cube &individual, bool opengl) {
 
     // Calculate starting center of mass:
     vector<double> starting_com = calculate_center_of_mass(mass);
+
+    // write to file for opengl
+    if (opengl) {
+        write_to_opengl_file(mass, opengl_file);
+    }
 
     // simulation loop
     for (int iteration = 0; iteration < NUM_OF_ITERATIONS; iteration++) {
@@ -74,29 +79,30 @@ void simulation_loop(Cube &individual, bool opengl) {
     individual.fitness = dist_travelled_x;
 
     // write energy to file
-//    for (int i = 0; i < kinetic_energy.size(); i++) {
-//        energy_file << kinetic_energy[i];
-//        if (i + 1 < kinetic_energy.size()) {
-//            energy_file << ",";
-//        }
-//    }
-//    energy_file << "\n";
-//    for (int i = 0; i < potential_energy.size(); i++) {
-//        energy_file << potential_energy[i];
-//        if (i + 1 < potential_energy.size()) {
-//            energy_file << ",";
-//        }
-//    }
-//    energy_file << "\n";
-//    for (int i = 0; i < potential_energy.size(); i++) {
-//        energy_file << kinetic_energy[i] + potential_energy[i];
-//        if (i + 1 < potential_energy.size()) {
-//            energy_file << ",";
-//        }
-//    }
-//
+    if (opengl) {
+        for (int i = 0; i < kinetic_energy.size(); i++) {
+            energy_file << kinetic_energy[i];
+            if (i + 1 < kinetic_energy.size()) {
+                energy_file << ",";
+            }
+        }
+        energy_file << "\n";
+        for (int i = 0; i < potential_energy.size(); i++) {
+            energy_file << potential_energy[i];
+            if (i + 1 < potential_energy.size()) {
+                energy_file << ",";
+            }
+        }
+        energy_file << "\n";
+        for (int i = 0; i < potential_energy.size(); i++) {
+            energy_file << kinetic_energy[i] + potential_energy[i];
+            if (i + 1 < potential_energy.size()) {
+                energy_file << ",";
+            }
+        }
+    }
     opengl_file.close();
-//    energy_file.close();
+    energy_file.close();
 }
 
 double dist(vector<double> a, vector<double> b) {
@@ -256,9 +262,9 @@ vector<double> calculate_center_of_mass(vector<Mass> &masses) {
     pos_z /= total_mass;
 
     vector<double> com;
-    com.push_back(pos_x);
-    com.push_back(pos_y);
-    com.push_back(pos_z);
+    com.emplace_back(pos_x);
+    com.emplace_back(pos_y);
+    com.emplace_back(pos_z);
 
     return com;
 }

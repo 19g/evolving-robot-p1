@@ -6,7 +6,7 @@
 // program constants
 #define NUM_OF_TRIALS 1
 #define POP_SIZE 30 // needs to be even number
-#define NUM_OF_EVALS 30
+#define NUM_OF_EVALS 1
 
 // global macros
 #define PI 3.14159
