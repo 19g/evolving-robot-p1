@@ -196,6 +196,7 @@ void crossover(Cube &A, Cube &B) {
 
 void mutation(Cube &individual) {
     // random variable generation
+    // TODO: move this outside of the mutation function becasue it's probably pretty slow
     random_device rd;
     mt19937 mt(rd());
     uniform_real_distribution<double> mut_chance(0, 1);
@@ -205,13 +206,21 @@ void mutation(Cube &individual) {
             // pick a spring and multiply its values by numbers between MIN_SWING and MAX_SWING
             uniform_int_distribution<> spring(0, NUM_OF_SPRINGS);
             uniform_real_distribution<double> swing(MIN_SWING, MAX_SWING);
-            uniform_real_distribution<double> b_val(0, individual.spring[i].a/2);
 //            individual.spring[spring(mt)].a =  individual.spring[spring(mt)].a * swing(mt);
-            individual.spring[spring(mt)].b = b_val(mt);
-            //individual.spring[spring(mt)].c =  individual.spring[spring(mt)].c * swing(mt);
+            if (mut_chance(mt) < PROB_PER_PARAM) {
+                uniform_real_distribution<double> b_val(0, individual.spring[i].a/2);
+                individual.spring[spring(mt)].b = b_val(mt);
+            }
+            if (mut_chance(mt) < PROB_PER_PARAM) {
+                uniform_real_distribution<double> c_val(MIN_C, MAX_C);
+                individual.spring[spring(mt)].c = c_val(mt);
+            }
 //            individual.spring[spring(mt)].d =  individual.spring[spring(mt)].d * swing(mt);
 //            individual.spring[spring(mt)].e =  individual.spring[spring(mt)].e * swing(mt);
-            //individual.spring[spring(mt)].k =  individual.spring[spring(mt)].k * swing(mt);
+            if (mut_chance(mt) < PROB_PER_PARAM) {
+                uniform_real_distribution<double> k_val(MIN_K_SPRING, MAX_K_SPRING);
+                individual.spring[spring(mt)].k = k_val(mt);
+            }
         }
     }
 }

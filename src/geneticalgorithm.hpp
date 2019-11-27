@@ -6,25 +6,26 @@
 // program constants
 #define NUM_OF_TRIALS 1
 #define POP_SIZE 30 // needs to be even number
-#define NUM_OF_EVALS 1
+#define NUM_OF_EVALS 1000
 
 // global macros
 #define PI 3.14159
 #define OMEGA (4*PI)
 #define INITIAL_HEIGHT 0.000001
-#define PROB_OF_MUT 0.1
+#define PROB_OF_MUT 0.3
+#define PROB_PER_PARAM 0.333333
 #define MIN_SWING 0.8
 #define MAX_SWING 1.2
 
 // spring macros
-#define MIN_K_SPRING 1000
-#define MAX_K_SPRING 1000
+#define MIN_K_SPRING 500
+#define MAX_K_SPRING 2000  // 1000 is a good value, so do times .5 and times 2 for min and max
 #define MIN_A L0_SIDE //0
 #define MAX_A L0_SIDE //(2*L0_SIDE)
 #define MIN_B 0 // a + b*sin(wt+c)
 #define MAX_B (L0_SIDE/2)
 #define MIN_C 0
-#define MAX_C 0 //(2*PI)
+#define MAX_C (PI/2)
 #define MIN_D 0
 #define MAX_D 1
 #define MIN_E 0
