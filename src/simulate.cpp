@@ -77,7 +77,7 @@ void simulation_loop(Cube &individual, bool opengl) {
 
     // assign fitness equal to distance travelled in the positive x direction
     // TODO: maybe change later to be a function of dist_travelled as well?
-    individual.fitness = dist_travelled_x - abs(dist_travelled_z); 
+    individual.fitness = dist_travelled_x; // - abs(dist_travelled_z); 
 
     // write energy to file
     if (opengl) {
