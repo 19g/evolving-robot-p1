@@ -1,5 +1,5 @@
-#ifndef EVOLVING_ROBOT_RANDOM_SEARCH_HPP
-#define EVOLVING_ROBOT_RANDOM_SEARCH_HPP
+#ifndef EVOLVING_ROBOT_HILL_CLIMBER_HPP
+#define EVOLVING_ROBOT_HILL_CLIMBER_HPP
 
 #include "simulate.hpp"
 
@@ -22,6 +22,13 @@
 #define MIN_C 0
 #define MAX_C (PI/2)
 
+// other
+#define PROB_OF_MUT 0.3
+#define PROB_PER_PARAM 0.333333
+#define MIN_SWING 0.8
+#define MAX_SWING 1.2
+
+
 /*
 struct Cube {
     std::vector<Mass> mass;
@@ -30,7 +37,8 @@ struct Cube {
 };*/
 
 // where all the GA stuff happens
-void random_search();
+void hill_climber();
 Cube initialize_cube();
+void mutation(Cube &);
 
 #endif //EVOLVING_ROBOT_GENETIC_ALGORITHM_HPP

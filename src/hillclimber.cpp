@@ -4,7 +4,7 @@
 #include <random>
 #include <vector>
 #include "simulate.hpp"
-#include "randomsearch.hpp"
+#include "hillclimber.hpp"
 
 using namespace std;
 
@@ -14,7 +14,7 @@ int main() {
     // use threads for performance
     thread t[NUM_OF_TRIALS];
     for (int i = 0; i < NUM_OF_TRIALS; i++) {
-        t[i] = thread(random_search);
+        t[i] = thread(hill_climber);
     }
     for (int i = 0; i < NUM_OF_TRIALS; i++) {
         t[i].join();
@@ -23,7 +23,7 @@ int main() {
     return 0;
 }
 
-void random_search() {
+void hill_climber() {
     // begin timer
     clock_t begin = clock();
 
@@ -34,7 +34,8 @@ void random_search() {
     // random search loop
     for (int eval = 0; eval < NUM_OF_EVALS; eval++) {
         // initialize offspring
-        Cube child = initialize_cube();
+        Cube child = parent;
+        mutation(child);
         simulation_loop(child, false);
 
         if (parent.fitness < child.fitness) {
@@ -124,4 +125,33 @@ Cube initialize_cube() {
     Cube cube = {mass, spring};
 
     return cube;
+}
+
+void mutation(Cube &individual) {
+    // random variable generation
+    // TODO: move this outside of the mutation function becasue it's probably pretty slow
+    random_device rd;
+    mt19937 mt(rd());
+    uniform_real_distribution<double> mut_chance(0, 1);
+
+    for (int i = 0; i < NUM_OF_SPRINGS; i++) {
+        if (mut_chance(mt) < PROB_OF_MUT) {
+            // pick a spring and multiply its values by numbers between MIN_SWING and MAX_SWING
+            uniform_int_distribution<> spring(0, NUM_OF_SPRINGS);
+            uniform_real_distribution<double> swing(MIN_SWING, MAX_SWING);
+//            individual.spring[spring(mt)].a =  individual.spring[spring(mt)].a * swing(mt);
+            if (mut_chance(mt) < PROB_PER_PARAM) {
+                uniform_real_distribution<double> b_val(0, individual.spring[i].a/2);
+                individual.spring[spring(mt)].b = b_val(mt);
+            }
+            if (mut_chance(mt) < PROB_PER_PARAM) {
+                uniform_real_distribution<double> c_val(MIN_C, MAX_C);
+                individual.spring[spring(mt)].c = c_val(mt);
+            }
+            if (mut_chance(mt) < PROB_PER_PARAM) {
+                uniform_real_distribution<double> k_val(MIN_K_SPRING, MAX_K_SPRING);
+                individual.spring[spring(mt)].k = k_val(mt);
+            }
+        }
+    }
 }
