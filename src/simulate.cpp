@@ -5,12 +5,12 @@
 
 using namespace std;
 
-void simulation_loop(Cube &individual) {
+void simulation_loop(Cube &individual, bool opengl) {
     // initialize files
 //    ofstream energy_file;
 //    energy_file.open(ENERGY_TXT);
-//    ofstream opengl_file;
-//    opengl_file.open(OPENGL_TXT);
+    ofstream opengl_file;
+    opengl_file.open(OPENGL_TXT);
 
     // declare variables
     double T = 0.0;
@@ -35,7 +35,7 @@ void simulation_loop(Cube &individual) {
         vector<vector<double>> force(NUM_OF_MASSES, vector<double>(DIMENSIONS));
 
         // breathing cube
-//        breathing_cube(spring, T);
+        breathing_cube(spring, T);
         // calculate force on each spring
         calculate_force(mass, spring, force);
 //        add_external_force(mass, spring, force);
@@ -54,7 +54,9 @@ void simulation_loop(Cube &individual) {
 //        cout << "e: " << kinetic_energy[iteration] + potential_energy[iteration] << "\n\n";
 
         // write to file for opengl
-//        write_to_opengl_file(mass, opengl_file);
+        if (opengl) {
+            write_to_opengl_file(mass, opengl_file);
+        }
 
         // update time
         T += DT;
@@ -65,7 +67,7 @@ void simulation_loop(Cube &individual) {
 
     // Calculate total distance travelled and its x componenet:
     double dist_travelled = dist(starting_com, ending_com);
-    double dist_travelled_x = ending_com[X] - starting_com[X];
+    double dist_travelled_x = ending_com[0] - starting_com[0];
 
     // assign fitness equal to distance travelled in the positive x direction
     // TODO: maybe change later to be a function of dist_travelled as well?
@@ -93,7 +95,7 @@ void simulation_loop(Cube &individual) {
 //        }
 //    }
 //
-//    opengl_file.close();
+    opengl_file.close();
 //    energy_file.close();
 }
 
@@ -141,8 +143,23 @@ void add_external_force(vector<Mass> &mass, vector<Spring> &spring, vector<vecto
 
 void add_ground_force(vector<Mass> &mass, vector<Spring> &spring, vector<vector<double>> &force) {
     for (int i = 0; i < NUM_OF_MASSES; i++) {
-        // if "under" ground, then apply restorative force
+        // if mass is "under" ground
         if (mass[i].p[2] < 0) {
+            // force due to friction
+            double force_horizontal = sqrt(pow(force[i][0], 2) + pow(force[i][1], 2));
+            if (force[i][2] < 0) {
+                if (force_horizontal < (-1) * force[i][2] * U_S) {
+                    force[i][0] = 0;
+                    force[i][1] = 0;
+                }
+                else {
+                    force[i][0] += force[i][2] * U_K * (force[i][0] / force_horizontal);
+                    force[i][1] += force[i][2] * U_K * (force[i][1] / force_horizontal);
+                }
+            }
+
+
+            // Apply restorative force
             force[i][2] += K_GROUND * abs(mass[i].p[2]);
         }
     }
@@ -229,9 +246,9 @@ vector<double> calculate_center_of_mass(vector<Mass> &masses) {
 
     for (int i=0; i<masses.size(); i++) {
         total_mass += masses[i].m;
-        pos_x += masses[i].m * masses[i].p[X];
-        pos_y += masses[i].m * masses[i].p[Y];
-        pos_z += masses[i].m * masses[i].p[Z];
+        pos_x += masses[i].m * masses[i].p[0];
+        pos_y += masses[i].m * masses[i].p[1];
+        pos_z += masses[i].m * masses[i].p[2];
     }
 
     pos_x /= total_mass;

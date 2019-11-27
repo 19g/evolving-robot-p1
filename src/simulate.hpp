@@ -7,7 +7,7 @@
 // cube variables
 #define WEIGHT_PER_MASS 0.1
 #define L0_SIDE 0.1
-//#define K_SPRING 1000.0
+//#define K_SPRING 10000.0
 //#define INITIAL_HEIGHT 2.0
 #define NUM_OF_MASSES 8
 #define NUM_OF_SPRINGS 28
@@ -17,11 +17,10 @@
 #define G 9.807
 #define K_GROUND 100000.0
 #define DT 0.0001
-#define V_DAMP_CONST 0.999999 //0.999999
+#define V_DAMP_CONST 0.9999 //0.999999
 #define NUM_OF_ITERATIONS 30000
-#define X 0
-#define Y 1
-#define Z 2
+#define U_S 1.0
+#define U_K 0.8
 
 // opengl
 #define NUM_OPEN_GL_CUBE_PTS 36
@@ -56,7 +55,7 @@ struct Cube {
 };
 
 // perform the physics simulation
-void simulation_loop(Cube &);
+void simulation_loop(Cube &, bool);
 // initialize cube with masses and springs
 void initialize_cube(std::vector<Mass> &, std::vector<Spring> &);
 // calculate distance between two 3D points

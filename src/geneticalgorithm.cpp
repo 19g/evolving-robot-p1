@@ -35,7 +35,7 @@ void loop() {
     }
 
     for (int i = 0; i < POP_SIZE; i++) {
-        simulation_loop(parent[i]);
+        simulation_loop(parent[i], false);
     }
 
 //    for (int i = 0; i < POP_SIZE; i++) {
@@ -61,7 +61,7 @@ void loop() {
 
         // get fitness of population
         for (int i = 0; i < POP_SIZE; i++) {
-            simulation_loop(child[i]);
+            simulation_loop(child[i], false);
         }
 
         // selection
@@ -87,6 +87,7 @@ void loop() {
     cout << "iter/sec: " << iters_per_sec << "\n";
 
     // output to file for opengl
+    simulation_loop(parent[0], true);
 }
 
 Cube initialize_cube() {
@@ -204,11 +205,11 @@ void mutation(Cube &individual) {
             // pick a spring and multiply its values by numbers between MIN_SWING and MAX_SWING
             uniform_int_distribution<> spring(0, NUM_OF_SPRINGS);
             uniform_real_distribution<double> swing(MIN_SWING, MAX_SWING);
-            individual.spring[spring(mt)].a =  individual.spring[spring(mt)].a * swing(mt);
+//            individual.spring[spring(mt)].a =  individual.spring[spring(mt)].a * swing(mt);
             individual.spring[spring(mt)].b =  individual.spring[spring(mt)].b * swing(mt);
             individual.spring[spring(mt)].c =  individual.spring[spring(mt)].c * swing(mt);
-            individual.spring[spring(mt)].d =  individual.spring[spring(mt)].d * swing(mt);
-            individual.spring[spring(mt)].e =  individual.spring[spring(mt)].e * swing(mt);
+//            individual.spring[spring(mt)].d =  individual.spring[spring(mt)].d * swing(mt);
+//            individual.spring[spring(mt)].e =  individual.spring[spring(mt)].e * swing(mt);
             individual.spring[spring(mt)].k =  individual.spring[spring(mt)].k * swing(mt);
         }
     }
@@ -248,19 +249,3 @@ void tournament_selection(vector<Cube> &parent, vector<Cube> &child, vector<Cube
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
