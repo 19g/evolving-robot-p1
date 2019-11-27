@@ -21,8 +21,8 @@
 #define MAX_K_SPRING 1000
 #define MIN_A L0_SIDE //0
 #define MAX_A L0_SIDE //(2*L0_SIDE)
-#define MIN_B (L0_SIDE/10) // a + b*sin(wt+c)
-#define MAX_B (L0_SIDE/10)
+#define MIN_B 0 // a + b*sin(wt+c)
+#define MAX_B (L0_SIDE/2)
 #define MIN_C 0
 #define MAX_C 0 //(2*PI)
 #define MIN_D 0
