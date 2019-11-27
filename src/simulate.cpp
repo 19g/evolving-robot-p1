@@ -49,8 +49,8 @@ void simulation_loop(Cube &individual, bool opengl) {
         // update position of cube
         update_position(mass, spring, force);
         // calculate energy
-        kinetic_energy.emplace_back(calculate_kinetic_energy(mass, spring));
-        potential_energy.emplace_back(calculate_potential_energy(mass, spring));
+        //kinetic_energy.emplace_back(calculate_kinetic_energy(mass, spring));
+        //potential_energy.emplace_back(calculate_potential_energy(mass, spring));
 
 //        cout << "T: " << T << "\n";
 //        for (int i = 0; i < NUM_OF_MASSES; i++) {
@@ -73,10 +73,11 @@ void simulation_loop(Cube &individual, bool opengl) {
     // Calculate total distance travelled and its x componenet:
     double dist_travelled = dist(starting_com, ending_com);
     double dist_travelled_x = ending_com[0] - starting_com[0];
+    double dist_travelled_z = ending_com[2] - starting_com[2];
 
     // assign fitness equal to distance travelled in the positive x direction
     // TODO: maybe change later to be a function of dist_travelled as well?
-    individual.fitness = dist_travelled_x;
+    individual.fitness = dist_travelled_x - abs(dist_travelled_z); 
 
     // write energy to file
     if (opengl) {
@@ -150,20 +151,46 @@ void add_external_force(vector<Mass> &mass, vector<Spring> &spring, vector<vecto
 void add_ground_force(vector<Mass> &mass, vector<Spring> &spring, vector<vector<double>> &force) {
     for (int i = 0; i < NUM_OF_MASSES; i++) {
         // if mass is "under" ground
-        if (mass[i].p[2] < 0) {
-            // force due to friction
+        if (mass[i].p[2] <= 0) {
+
+            // calculate force due to friction:
+            /**/
+
             double force_horizontal = sqrt(pow(force[i][0], 2) + pow(force[i][1], 2));
+            // get angle of horizontal force:
+            double cos_theta = force[i][0]/force_horizontal;  // F_x/F
+            double sin_theta = force[i][1]/force_horizontal;  // F_y/F
+
             if (force[i][2] < 0) {
                 if (force_horizontal < (-1) * force[i][2] * U_S) {
                     force[i][0] = 0;
                     force[i][1] = 0;
+                    //cout << "STATIC\n";
                 }
                 else {
-                    force[i][0] += force[i][2] * U_K * (force[i][0] / force_horizontal);
-                    force[i][1] += force[i][2] * U_K * (force[i][1] / force_horizontal);
-                }
-            }
+                    // Add force of kineteic friction in the opposite direction
+                    // of the force. We know that force[i][2] is always negative
+                    // here, so we add it to force_horizontal (because we want
+                    // to actually subtract it):
+                    double force_kinetic_friction = U_K * force[i][2];
+                    //cout << "Fk = " << force_kinetic_friction << endl;
+                    //cout << "Fh = " << force_horizontal << endl;
+                    force_horizontal += force_kinetic_friction;
+                    //cout << "Fh' = " << force_horizontal << endl;
 
+                    // get back the x and y components of the horizontal force:
+                    //cout << "Before: Fx = " << force[i][0] << ", Fy = " << force[i][1] << endl;
+                    force[i][0] = force_horizontal*cos_theta;
+                    force[i][1] = force_horizontal*sin_theta;
+                    //cout << "After: Fx = " << force[i][0] << ", Fy = " << force[i][1] << endl;
+
+                    
+                    //force[i][0] += force[i][2] * U_K * (force[i][0] / force_horizontal);
+                    //force[i][1] += force[i][2] * U_K * (force[i][1] / force_horizontal);
+                    
+                    
+                }
+            }/**/  // END FRICTION
 
             // Apply restorative force
             force[i][2] += K_GROUND * abs(mass[i].p[2]);

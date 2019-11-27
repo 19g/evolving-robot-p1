@@ -11,20 +11,20 @@
 // global macros
 #define PI 3.14159
 #define OMEGA (4*PI)
-#define INITIAL_HEIGHT 0.0
+#define INITIAL_HEIGHT 0.000001
 #define PROB_OF_MUT 0.1
 #define MIN_SWING 0.8
 #define MAX_SWING 1.2
 
 // spring macros
-#define MIN_K_SPRING 100
-#define MAX_K_SPRING 1000000
-#define MIN_A 0
-#define MAX_A (2*L0_SIDE)
-#define MIN_B 0 // a + b*sin(wt+c)
-#define MAX_B 3
+#define MIN_K_SPRING 1000
+#define MAX_K_SPRING 1000
+#define MIN_A L0_SIDE //0
+#define MAX_A L0_SIDE //(2*L0_SIDE)
+#define MIN_B (L0_SIDE/10) // a + b*sin(wt+c)
+#define MAX_B (L0_SIDE/10)
 #define MIN_C 0
-#define MAX_C (2*PI)
+#define MAX_C 0 //(2*PI)
 #define MIN_D 0
 #define MAX_D 1
 #define MIN_E 0
