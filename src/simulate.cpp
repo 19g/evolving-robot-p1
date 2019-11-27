@@ -35,7 +35,7 @@ void simulation_loop(Cube &individual, bool opengl) {
         vector<vector<double>> force(NUM_OF_MASSES, vector<double>(DIMENSIONS));
 
         // breathing cube
-        //breathing_cube(spring, T);
+        breathing_cube(spring, T);
         // calculate force on each spring
         calculate_force(mass, spring, force);
 //        add_external_force(mass, spring, force);
@@ -68,10 +68,11 @@ void simulation_loop(Cube &individual, bool opengl) {
     // Calculate total distance travelled and its x componenet:
     double dist_travelled = dist(starting_com, ending_com);
     double dist_travelled_x = ending_com[0] - starting_com[0];
+    double dist_travelled_z = ending_com[2] - starting_com[2];
 
     // assign fitness equal to distance travelled in the positive x direction
     // TODO: maybe change later to be a function of dist_travelled as well?
-    individual.fitness = dist_travelled_x;
+    individual.fitness = dist_travelled_x - abs(dist_travelled_z); 
 
     // write energy to file
 //    for (int i = 0; i < kinetic_energy.size(); i++) {
@@ -147,6 +148,7 @@ void add_ground_force(vector<Mass> &mass, vector<Spring> &spring, vector<vector<
         if (mass[i].p[2] <= 0) {
 
             // calculate force due to friction:
+            /**/
 
             double force_horizontal = sqrt(pow(force[i][0], 2) + pow(force[i][1], 2));
             // get angle of horizontal force:
@@ -176,13 +178,13 @@ void add_ground_force(vector<Mass> &mass, vector<Spring> &spring, vector<vector<
                     force[i][1] = force_horizontal*sin_theta;
                     //cout << "After: Fx = " << force[i][0] << ", Fy = " << force[i][1] << endl;
 
-                    /*
-                    force[i][0] += force[i][2] * U_K * (force[i][0] / force_horizontal);
-                    force[i][1] += force[i][2] * U_K * (force[i][1] / force_horizontal);
-                    */
+                    
+                    //force[i][0] += force[i][2] * U_K * (force[i][0] / force_horizontal);
+                    //force[i][1] += force[i][2] * U_K * (force[i][1] / force_horizontal);
+                    
                     
                 }
-            }
+            }/**/  // END FRICTION
 
             // Apply restorative force
             force[i][2] += K_GROUND * abs(mass[i].p[2]);
