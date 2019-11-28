@@ -84,8 +84,17 @@ void loop() {
     double iters_per_sec = NUM_OF_ITERATIONS / elapsed_secs;
     cout << "iter/sec: " << iters_per_sec << "\n";
 
+    int max_fit_index = 0;
+    for (int i = 0; i < POP_SIZE; i++) {
+        if (parent[i].fitness > parent[max_fit_index].fitness) {
+            max_fit_index = i;
+        }
+    }
+
+    cout << "MAX FITNESS: " << parent[max_fit_index].fitness << "\n";
+
     // output to file for opengl
-    simulation_loop(parent[0], true);
+    simulation_loop(parent[max_fit_index], true);
 }
 
 Cube initialize_cube() {
@@ -252,4 +261,48 @@ void tournament_selection(vector<Cube> &parent, vector<Cube> &child, vector<Cube
             parent[i] = all[n];
         }
     }
+}
+
+void calculate_diversity(vector<Cube> &population) {
+    double sum_k = 0;
+    double sum_b = 0;
+    double sum_c = 0;
+    for (int i = 0; i < POP_SIZE; i++) {
+        double temp_k = population[i].spring[0].k;
+        temp_k += population[i].spring[11].k;
+        temp_k += population[i].spring[30].k;
+
+        double temp_b = population[i].spring[0].b;
+        temp_b += population[i].spring[11].b;
+        temp_b += population[i].spring[30].b;
+
+        double temp_c = population[i].spring[0].c;
+        temp_c += population[i].spring[11].c;
+        temp_c += population[i].spring[30].c;
+
+        sum_k += temp_k / 3;
+        sum_b += temp_b / 3;
+        sum_c += temp_c / 3;
+    }
+
+    double diversity = 0.0;
+    for (int i = 0; i < POP_SIZE; i++) {
+        double temp_k = population[i].spring[0].k;
+        temp_k += population[i].spring[11].k;
+        temp_k += population[i].spring[30].k;
+
+        double temp_b = population[i].spring[0].b;
+        temp_b += population[i].spring[11].b;
+        temp_b += population[i].spring[30].b;
+
+        double temp_c = population[i].spring[0].c;
+        temp_c += population[i].spring[11].c;
+        temp_c += population[i].spring[30].c;
+
+        diversity += abs(sum_k - temp_k);
+        diversity += abs(sum_b - temp_b);
+        diversity += abs(sum_c - temp_c);
+    }
+
+    // write diversity to a file
 }
