@@ -18,7 +18,7 @@
 #define K_GROUND 100000.0
 #define DT 0.0001
 #define V_DAMP_CONST 0.999 //0.999999
-#define NUM_OF_ITERATIONS 60000
+#define NUM_OF_ITERATIONS 15000
 // 15000 = 3 cycles (for omega = 4pi and DT = 0.0001)
 #define U_S 1.0
 #define U_K 0.8
@@ -64,9 +64,15 @@ void calculate_force(std::vector<Mass> &, std::vector<Spring> &, std::vector<std
 // add external forces
 void add_external_force(std::vector<Mass> &, std::vector<Spring> &, std::vector<std::vector<double>> &);
 // add force due to ground
-void add_ground_force(std::vector<Mass> &, std::vector<Spring> &, std::vector<std::vector<double>> &);
+//void add_ground_force(std::vector<Mass> &, std::vector<Spring> &, std::vector<std::vector<double>> &);
+void add_ground_force(Mass &, 
+                      std::vector<Spring> &, 
+                      std::vector<double> &);
 // update position of masses due to force
-void update_position(std::vector<Mass> &, std::vector<Spring> &, std::vector<std::vector<double>> &);
+//void update_position(std::vector<Mass> &, std::vector<Spring> &, std::vector<std::vector<double>> &);
+void update_position(Mass &, 
+                     std::vector<Spring> &, 
+                     std::vector<double> &);
 // calculate total energy of cube
 double calculate_potential_energy(std::vector<Mass> &, std::vector<Spring> &);
 // calculate kinetic energy of cube

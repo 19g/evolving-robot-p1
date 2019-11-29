@@ -1,5 +1,7 @@
 #include <iostream>
 #include <fstream>
+#include <thread>
+
 #include "simulate.hpp"
 #include "geneticalgorithm.hpp"
 
@@ -38,6 +40,7 @@ void simulation_loop(Cube &individual, bool opengl) {
     if (opengl) num_iterations *= 3;
 
     // simulation loop
+    thread threads[NUM_OF_MASSES];
     for (int iteration = 0; iteration < num_iterations; iteration++) {
         // initialize force vector
         vector<vector<double>> force(NUM_OF_MASSES, vector<double>(DIMENSIONS));
@@ -45,12 +48,34 @@ void simulation_loop(Cube &individual, bool opengl) {
         // breathing cube
         breathing_cube(spring, T);
         // calculate force on each spring
-        calculate_force(mass, spring, force);
+        calculate_force(mass, spring, force);  // Potential threading race condition in this function
 //        add_external_force(mass, spring, force);
-        add_ground_force(mass, spring, force);
 
-        // update position of cube
-        update_position(mass, spring, force);
+        // these two functions can be easily threaded:
+        for (int i=0; i<NUM_OF_MASSES; i++) {
+            // add friction and normal forces:
+            //add_ground_force(mass, spring, force);
+            threads[i] = thread(add_ground_force, 
+                                ref(mass[i]), ref(spring), ref(force[i]));
+        }
+        
+        for (int i=0; i<NUM_OF_MASSES; i++) {
+            // wait for add_ground_force[i] to finish:
+            threads[i].join();
+        }
+        for (int i=0; i<NUM_OF_MASSES; i++) {
+
+            // update position of cube:
+            //update_position(mass, spring, force);
+            threads[i] = thread(update_position, 
+                                ref(mass[i]), ref(spring), ref(force[i]));
+        }
+        // wait for all threads:
+        
+        for (int i=0; i<NUM_OF_MASSES; i++) {
+            threads[i].join();
+        }
+
         // calculate energy
         //kinetic_energy.emplace_back(calculate_kinetic_energy(mass, spring));
         //potential_energy.emplace_back(calculate_potential_energy(mass, spring));
@@ -115,7 +140,10 @@ double dist(vector<double> a, vector<double> b) {
     return sqrt(pow(b[0]-a[0],2) + pow(b[1]-a[1],2) + pow(b[2]-a[2],2));
 }
 
-void calculate_force(vector<Mass> &mass, vector<Spring> &spring, vector<vector<double>> &force) {
+void calculate_force(vector<Mass> &mass, 
+                     vector<Spring> &spring, 
+                     vector<vector<double>> &force) {
+
     // force due to spring
     for (int i = 0; i < NUM_OF_SPRINGS; i++) {
         // calculate force vector for spring
@@ -134,6 +162,8 @@ void calculate_force(vector<Mass> &mass, vector<Spring> &spring, vector<vector<d
                                       forceNormalized * (mass[spring[i].m2].p[2] - mass[spring[i].m1].p[2]) / length};
 
         // now update force vector for masses that spring touches
+        // TODO: (warning) this would be a race condition for threading
+        // may introduce invalid values
         force[spring[i].m1][0] += forceVector[0];
         force[spring[i].m1][1] += forceVector[1];
         force[spring[i].m1][2] += forceVector[2];
@@ -149,27 +179,39 @@ void calculate_force(vector<Mass> &mass, vector<Spring> &spring, vector<vector<d
 
 }
 
-void add_external_force(vector<Mass> &mass, vector<Spring> &spring, vector<vector<double>> &force) {
+void add_external_force(vector<Mass> &mass, 
+                        vector<Spring> &spring, 
+                        vector<vector<double>> &force) {
     // this is where i would calculate the external forces ... if there were any
 }
 
-void add_ground_force(vector<Mass> &mass, vector<Spring> &spring, vector<vector<double>> &force) {
-    for (int i = 0; i < NUM_OF_MASSES; i++) {
+void add_ground_force(Mass &mass, 
+                      vector<Spring> &spring, 
+                      vector<double> &force) {
+
+    // un-cast constness:
+    /*
+    Mass &mass = const_cast<Mass &>(_mass);
+    vector<Spring> &spring = const_cast<vector<Spring> &>(_spring);
+    vector<double> &force = const_cast<vector<double> &>(_force);
+    */
+
+    //for (int i = 0; i < NUM_OF_MASSES; i++) {
         // if mass is "under" ground
-        if (mass[i].p[2] <= 0) {
+        if (mass.p[2] <= 0) {
 
             // calculate force due to friction:
             /**/
 
-            double force_horizontal = sqrt(pow(force[i][0], 2) + pow(force[i][1], 2));
+            double force_horizontal = sqrt(pow(force[0], 2) + pow(force[1], 2));
             // get angle of horizontal force:
-            double cos_theta = force[i][0]/force_horizontal;  // F_x/F
-            double sin_theta = force[i][1]/force_horizontal;  // F_y/F
+            double cos_theta = force[0]/force_horizontal;  // F_x/F
+            double sin_theta = force[1]/force_horizontal;  // F_y/F
 
-            if (force[i][2] < 0) {
-                if (force_horizontal < (-1) * force[i][2] * U_S) {
-                    force[i][0] = 0;
-                    force[i][1] = 0;
+            if (force[2] < 0) {
+                if (force_horizontal < (-1) * force[2] * U_S) {
+                    force[0] = 0;
+                    force[1] = 0;
                     //cout << "STATIC\n";
                 }
                 else {
@@ -177,7 +219,7 @@ void add_ground_force(vector<Mass> &mass, vector<Spring> &spring, vector<vector<
                     // of the force. We know that force[i][2] is always negative
                     // here, so we add it to force_horizontal (because we want
                     // to actually subtract it):
-                    double force_kinetic_friction = U_K * force[i][2];
+                    double force_kinetic_friction = U_K * force[2];
                     //cout << "Fk = " << force_kinetic_friction << endl;
                     //cout << "Fh = " << force_horizontal << endl;
                     force_horizontal += force_kinetic_friction;
@@ -185,8 +227,8 @@ void add_ground_force(vector<Mass> &mass, vector<Spring> &spring, vector<vector<
 
                     // get back the x and y components of the horizontal force:
                     //cout << "Before: Fx = " << force[i][0] << ", Fy = " << force[i][1] << endl;
-                    force[i][0] = force_horizontal*cos_theta;
-                    force[i][1] = force_horizontal*sin_theta;
+                    force[0] = force_horizontal*cos_theta;
+                    force[1] = force_horizontal*sin_theta;
                     //cout << "After: Fx = " << force[i][0] << ", Fy = " << force[i][1] << endl;
 
                     
@@ -198,21 +240,31 @@ void add_ground_force(vector<Mass> &mass, vector<Spring> &spring, vector<vector<
             }/**/  // END FRICTION
 
             // Apply restorative force
-            force[i][2] += K_GROUND * abs(mass[i].p[2]);
+            force[2] += K_GROUND * abs(mass.p[2]);
         }
-    }
+    //}
 }
 
-void update_position(vector<Mass> &mass, vector<Spring> &spring, vector<vector<double>> &force) {
-    for (int i = 0; i < NUM_OF_MASSES; i++) {
+void update_position(Mass &mass, 
+                     vector<Spring> &spring, 
+                     vector<double> &force) {
+
+    // un-cast constness:
+    /*
+    Mass &mass = const_cast<Mass &>(_mass);
+    vector<Spring> &spring = const_cast<vector<Spring> &>(_spring);
+    vector<double> &force = const_cast<vector<double> &>(_force);
+    */
+
+    //for (int i = 0; i < NUM_OF_MASSES; i++) {
         // acceleration, velocity, position calculation
         for (int j = 0; j < DIMENSIONS; j++) {
-            mass[i].a[j] = force[i][j] / mass[i].m;
-            mass[i].v[j] += mass[i].a[j] * DT;
-            mass[i].v[j] = mass[i].v[j] * V_DAMP_CONST; // velocity dampening
-            mass[i].p[j] += mass[i].v[j] * DT;
+            mass.a[j] = force[j] / mass.m;
+            mass.v[j] += mass.a[j] * DT;
+            mass.v[j] = mass.v[j] * V_DAMP_CONST; // velocity dampening
+            mass.p[j] += mass.v[j] * DT;
         }
-    }
+    //}
 }
 
 double calculate_potential_energy(vector<Mass> &mass, vector<Spring> &spring) {

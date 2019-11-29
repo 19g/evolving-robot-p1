@@ -71,11 +71,13 @@ void loop() {
         }
         tournament_selection(parent, child, all);
 
+        /*
         if (eval % 1 == 0) {
             for (int i = 0; i < POP_SIZE; i++) {
                 cout << eval << ": " << parent[i].fitness << "\n";
             }
         }
+        */
     }
 
     // end timer
