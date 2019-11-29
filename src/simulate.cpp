@@ -28,6 +28,7 @@ void simulation_loop(Cube &individual, bool opengl) {
 
     // Calculate starting center of mass:
     vector<double> starting_com = calculate_center_of_mass(mass);
+    individual.fitness = 0;
 
     // write to file for opengl
     if (opengl) {
@@ -51,6 +52,13 @@ void simulation_loop(Cube &individual, bool opengl) {
 
         // update position of cube
         update_position(mass, spring, force);
+
+        // subtract average height from fitness:
+        for (int i=0; i<NUM_OF_MASSES; i++) {
+            if (mass[i].p[2] > L0_SIDE*1.5)
+                individual.fitness -= (mass[i].p[2]-(L0_SIDE*1.5))/NUM_OF_MASSES;
+        }
+
         // calculate energy
         //kinetic_energy.emplace_back(calculate_kinetic_energy(mass, spring));
         //potential_energy.emplace_back(calculate_potential_energy(mass, spring));
@@ -76,13 +84,14 @@ void simulation_loop(Cube &individual, bool opengl) {
     // Calculate total distance travelled and its x componenet:
     double dist_travelled = dist(starting_com, ending_com);
     double dist_travelled_x = ending_com[0] - starting_com[0];
+    double dist_travelled_y = ending_com[1] - starting_com[1];
     double dist_travelled_z = ending_com[2] - starting_com[2];
 
     // assign fitness equal to distance travelled in the positive x direction
     // TODO: maybe change later to be a function of dist_travelled as well?
     //individual.fitness = dist_travelled - dist_travelled_z;
-    individual.fitness = dist_travelled_x; // - abs(dist_travelled_z);
-
+    individual.fitness += dist_travelled_x*num_iterations; // - abs(dist_travelled_z);
+    individual.fitness -= abs(dist_travelled_y)*(num_iterations/2);
 
     // write energy to file
     if (opengl) {
@@ -106,6 +115,8 @@ void simulation_loop(Cube &individual, bool opengl) {
                 energy_file << ",";
             }
         }
+        
+        cout << "Final distance (x direction): " << dist_travelled_x << endl;
     }
     opengl_file.close();
     energy_file.close();
