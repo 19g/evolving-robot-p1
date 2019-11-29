@@ -6,6 +6,7 @@
 // program constants
 #define NUM_OF_TRIALS 1
 #define NUM_OF_EVALS 30000
+#define OPENGL_TXT "cubes_rand.txt"
 
 // global macros
 #define PI 3.14159
