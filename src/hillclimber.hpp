@@ -7,11 +7,11 @@
 #define NUM_OF_TRIALS 1
 #define NUM_OF_EVALS 1020
 #define OPENGL_TXT "cubes_hc.txt"
+#define LEARNING_TXT "learning_hc.txt"
 
 // global macros
 #define PI 3.14159
-#define OMEGA (4*PI)
-#define INITIAL_HEIGHT 0.000000001
+#define INITIAL_HEIGHT 0.0000001
 
 // spring macros
 #define MIN_K_SPRING 500

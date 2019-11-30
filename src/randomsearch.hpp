@@ -5,13 +5,13 @@
 
 // program constants
 #define NUM_OF_TRIALS 1
-#define NUM_OF_EVALS 30000
+#define NUM_OF_EVALS 10000
 #define OPENGL_TXT "cubes_rand.txt"
+#define LEARNING_TXT "learning_rand.txt"
 
 // global macros
 #define PI 3.14159
-#define OMEGA (4*PI)
-#define INITIAL_HEIGHT 0.000000001
+#define INITIAL_HEIGHT 0.0000001
 
 // spring macros
 #define MIN_K_SPRING 500

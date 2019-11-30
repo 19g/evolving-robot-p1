@@ -3,6 +3,7 @@
 #include <thread>
 #include <random>
 #include <vector>
+#include <fstream>
 #include "simulate.hpp"
 #include "randomsearch.hpp"
 
@@ -27,6 +28,10 @@ void random_search() {
     // begin timer
     clock_t begin = clock();
 
+    // initialize file
+    ofstream learning_file;
+    learning_file.open(LEARNING_TXT);
+
     // initialize parent population randomly
     Cube parent = initialize_cube();
     simulation_loop(parent, false);
@@ -39,6 +44,12 @@ void random_search() {
 
         if (parent.fitness < child.fitness) {
             parent = child;
+        }
+
+        // write to file
+        learning_file << parent.fitness;
+        if (eval != NUM_OF_EVALS - 1) {
+            learning_file << ",";
         }
 
         if (eval % 1 == 0) {
@@ -54,6 +65,9 @@ void random_search() {
 
     // output to file for opengl
     simulation_loop(parent, true);
+
+    // close file
+    learning_file.close();
 }
 
 Cube initialize_cube() {

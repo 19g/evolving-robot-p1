@@ -9,10 +9,10 @@
 #define NUM_OF_EVALS 1020
 #define DIVERSITY_TXT "diversity.txt"
 #define OPENGL_TXT "cubes_ga.txt"
+#define LEARNING_TXT "learning_ga.txt"
 
 // global macros
 #define PI 3.14159
-#define OMEGA (4*PI)
 #define INITIAL_HEIGHT 0.0000001
 #define PROB_OF_MUT 0.3
 #define PROB_PER_PARAM 0.333333

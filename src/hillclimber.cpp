@@ -27,6 +27,10 @@ void hill_climber() {
     // begin timer
     clock_t begin = clock();
 
+    // initialize file
+    ofstream learning_file;
+    learning_file.open(LEARNING_TXT);
+
     // initialize parent population randomly
     Cube parent = initialize_cube();
     simulation_loop(parent, false);
@@ -42,6 +46,12 @@ void hill_climber() {
             parent = child;
         }
 
+        // write to file
+        learning_file << parent.fitness;
+        if (eval != NUM_OF_EVALS - 1) {
+            learning_file << ",";
+        }
+
         if (eval % 1 == 0) {
             cout << eval << ": " << parent.fitness << "\n";
         }
@@ -55,6 +65,9 @@ void hill_climber() {
 
     // output to file for opengl
     simulation_loop(parent, true);
+
+    // close file
+    learning_file.close();
 }
 
 Cube initialize_cube() {

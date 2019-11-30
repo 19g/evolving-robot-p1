@@ -31,8 +31,10 @@ void loop() {
     clock_t begin = clock();
 
     // initialize files
-    ofstream diversity_file;
-    diversity_file.open(DIVERSITY_TXT);
+//    ofstream diversity_file;
+//    diversity_file.open(DIVERSITY_TXT);
+    ofstream learning_file;
+    learning_file.open(LEARNING_TXT);
 
     // initialize parent population randomly
     vector<Cube> parent(POP_SIZE);
@@ -81,6 +83,12 @@ void loop() {
         // write diversity to a file
 //        calculate_diversity(parent, diversity_file);
 
+        // write learning curve to file
+        learning_file << parent.fitness;
+        if (eval != NUM_OF_EVALS - 1) {
+            learning_file << ",";
+        }
+
         if (eval % POP_SIZE == 0) {
             for (int i = 0; i < POP_SIZE; i++) {
                 cout << eval << ": " << parent[i].fitness << "\n";
@@ -105,6 +113,10 @@ void loop() {
 
     // output to file for opengl
     simulation_loop(parent[max_fit_index], true);
+
+    // close files
+    learning_file.close();
+//    diversity_file.close();
 }
 
 Cube initialize_cube() {
