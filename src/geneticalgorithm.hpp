@@ -36,7 +36,7 @@ std::vector<int> randomize_array_of_springs();
 void crossover(Cube &, Cube &);
 void mutation(Cube &);
 void tournament_selection(std::vector<Cube> &, std::vector<Cube> &, std::vector<Cube> &);
-void calculate_diversity(std::vector<Cube> &);
+void calculate_diversity(std::vector<Cube> &, std::ofstream &);
 
 
 #endif //EVOLVING_ROBOT_GENETIC_ALGORITHM_HPP

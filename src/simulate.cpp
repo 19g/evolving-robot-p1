@@ -60,8 +60,8 @@ void simulation_loop(Cube &individual, bool opengl) {
         }
 
         // calculate energy
-        //kinetic_energy.emplace_back(calculate_kinetic_energy(mass, spring));
-        //potential_energy.emplace_back(calculate_potential_energy(mass, spring));
+        kinetic_energy.emplace_back(calculate_kinetic_energy(mass, spring));
+        potential_energy.emplace_back(calculate_potential_energy(mass, spring));
 
 //        cout << "T: " << T << "\n";
 //        for (int i = 0; i < NUM_OF_MASSES; i++) {
