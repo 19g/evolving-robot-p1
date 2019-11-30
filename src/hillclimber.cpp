@@ -3,6 +3,7 @@
 #include <thread>
 #include <random>
 #include <vector>
+#include <fstream>
 #include "simulate.hpp"
 #include "hillclimber.hpp"
 
