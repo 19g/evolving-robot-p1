@@ -3,6 +3,7 @@
 #include <thread>
 #include <random>
 #include <vector>
+#include <fstream>
 #include "simulate.hpp"
 #include "geneticalgorithm.hpp"
 
@@ -26,6 +27,10 @@ int main() {
 void loop() {
     // begin timer
     clock_t begin = clock();
+
+    // initialize files
+    ofstream diversity_file;
+    diversity_file.open(DIVERSITY_TXT);
 
     // initialize parent population randomly
     vector<Cube> parent(POP_SIZE);
@@ -70,6 +75,9 @@ void loop() {
 
         }
         tournament_selection(parent, child, all);
+
+        // write diversity to a file
+        calculate_diversity(parent, diversity_file);
 
         if (eval % 300 == 0) {
             for (int i = 0; i < POP_SIZE; i++) {
@@ -263,46 +271,45 @@ void tournament_selection(vector<Cube> &parent, vector<Cube> &child, vector<Cube
     }
 }
 
-void calculate_diversity(vector<Cube> &population) {
-    double sum_k = 0;
-    double sum_b = 0;
-    double sum_c = 0;
+void calculate_diversity(vector<Cube> &population, ofstream &diversity_file) {
+    double avg_k;
+    double avg_b;
+    double avg_c;
+    double mse_k;
+    double mse_b;
+    double mse_c;
+    double sum_k;
+    double sum_b;
+    double sum_c;
+    // get avg value of parameters
     for (int i = 0; i < POP_SIZE; i++) {
-        double temp_k = population[i].spring[0].k;
-        temp_k += population[i].spring[11].k;
-        temp_k += population[i].spring[30].k;
+        for (int j = 0; j < NUM_OF_SPRINGS; j++) {
+            avg_k += population[i].spring[j].k;
+            avg_b += population[i].spring[j].b;
+            avg_c += population[i].spring[j].c;
+        }
+    }
+    avg_k /= POP_SIZE;
+    avg_b /= POP_SIZE;
+    avg_c /= POP_SIZE;
 
-        double temp_b = population[i].spring[0].b;
-        temp_b += population[i].spring[11].b;
-        temp_b += population[i].spring[30].b;
-
-        double temp_c = population[i].spring[0].c;
-        temp_c += population[i].spring[11].c;
-        temp_c += population[i].spring[30].c;
-
-        sum_k += temp_k / 3;
-        sum_b += temp_b / 3;
-        sum_c += temp_c / 3;
+    // calculate diversity form these averages
+    for (int i = 0; i < POP_SIZE; i++) {
+        for (int j = 0; j < NUM_OF_SPRINGS; j++) {
+            sum_k += population[i].spring[j].k;
+            sum_b += population[i].spring[j].b;
+            sum_c += population[i].spring[j].c;
+        }
+        mse_k += pow(sum_k - avg_k, 2);
+        mse_b += pow(sum_b - avg_b, 2);
+        mse_c += pow(sum_c - avg_c, 2);
     }
 
-    double diversity = 0.0;
-    for (int i = 0; i < POP_SIZE; i++) {
-        double temp_k = population[i].spring[0].k;
-        temp_k += population[i].spring[11].k;
-        temp_k += population[i].spring[30].k;
-
-        double temp_b = population[i].spring[0].b;
-        temp_b += population[i].spring[11].b;
-        temp_b += population[i].spring[30].b;
-
-        double temp_c = population[i].spring[0].c;
-        temp_c += population[i].spring[11].c;
-        temp_c += population[i].spring[30].c;
-
-        diversity += abs(sum_k - temp_k);
-        diversity += abs(sum_b - temp_b);
-        diversity += abs(sum_c - temp_c);
-    }
+    mse_k /= POP_SIZE;
+    // scale up b and c so they have a meaningful contribution to diversity
+    mse_b = (mse_b / POP_SIZE) * (MAX_K_SPRING - MIN_K_SPRING) / (MAX_B - MIN_B);
+    mse_c =(mse_c / POP_SIZE) * (MAX_K_SPRING - MIN_K_SPRING) / (MAX_C- MIN_C);
 
     // write diversity to a file
+    diversity_file << mse_k + mse_b + mse_c << ",";
 }
