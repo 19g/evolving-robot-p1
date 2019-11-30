@@ -15,7 +15,7 @@ int main() {
     // use threads for performance
     thread t[NUM_OF_TRIALS];
     for (int i = 0; i < NUM_OF_TRIALS; i++) {
-        t[i] = thread(random_search);
+        t[i] = thread(random_search, i);
     }
     for (int i = 0; i < NUM_OF_TRIALS; i++) {
         t[i].join();
@@ -24,13 +24,13 @@ int main() {
     return 0;
 }
 
-void random_search() {
+void random_search(int thread_num) {
     // begin timer
     clock_t begin = clock();
 
     // initialize file
     ofstream learning_file;
-    learning_file.open(LEARNING_TXT);
+    learning_file.open(to_string(thread_num) + LEARNING_TXT);
 
     // initialize parent population randomly
     Cube parent = initialize_cube();

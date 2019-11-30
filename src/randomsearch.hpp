@@ -31,7 +31,7 @@ struct Cube {
 };*/
 
 // where all the GA stuff happens
-void random_search();
+void random_search(int);
 Cube initialize_cube();
 
 #endif //EVOLVING_ROBOT_GENETIC_ALGORITHM_HPP

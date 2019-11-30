@@ -13,20 +13,18 @@ int main() {
     srand(time(nullptr));
 
     // use threads for performance
-//    thread t[NUM_OF_TRIALS];
-//    for (int i = 0; i < NUM_OF_TRIALS; i++) {
-//        t[i] = thread(loop);
-//    }
-//    for (int i = 0; i < NUM_OF_TRIALS; i++) {
-//        t[i].join();
-//    }
-
-    loop();
+    thread t[NUM_OF_TRIALS];
+    for (int i = 0; i < NUM_OF_TRIALS; i++) {
+        t[i] = thread(loop, i);
+    }
+    for (int i = 0; i < NUM_OF_TRIALS; i++) {
+        t[i].join();
+    }
 
     return 0;
 }
 
-void loop() {
+void loop(int thread_num) {
     // begin timer
     clock_t begin = clock();
 
@@ -34,7 +32,7 @@ void loop() {
 //    ofstream diversity_file;
 //    diversity_file.open(DIVERSITY_TXT);
     ofstream learning_file;
-    learning_file.open(LEARNING_TXT);
+    learning_file.open(to_string(thread_num) + LEARNING_TXT);
 
     // initialize parent population randomly
     vector<Cube> parent(POP_SIZE);
@@ -83,12 +81,21 @@ void loop() {
         // write diversity to a file
 //        calculate_diversity(parent, diversity_file);
 
+        // find most fit individual
+        int max_fit_index = 0;
+        for (int i = 0; i < POP_SIZE; i++) {
+            if (parent[i].fitness > parent[max_fit_index].fitness) {
+                max_fit_index = i;
+            }
+        }
+
         // write learning curve to file
-        learning_file << parent.fitness;
+        learning_file << parent[max_fit_index].fitness;
         if (eval != NUM_OF_EVALS - 1) {
             learning_file << ",";
         }
 
+        // print fitnesses of population
         if (eval % POP_SIZE == 0) {
             for (int i = 0; i < POP_SIZE; i++) {
                 cout << eval << ": " << parent[i].fitness << "\n";

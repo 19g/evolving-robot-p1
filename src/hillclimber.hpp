@@ -38,7 +38,7 @@ struct Cube {
 };*/
 
 // where all the GA stuff happens
-void hill_climber();
+void hill_climber(int);
 Cube initialize_cube();
 void mutation(Cube &);
 

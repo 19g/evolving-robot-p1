@@ -30,7 +30,7 @@
 #define MAX_C (PI/2)
 
 // where all the GA stuff happens
-void loop();
+void loop(int);
 Cube initialize_cube();
 std::vector<int> randomize_array_of_springs();
 void crossover(Cube &, Cube &);
