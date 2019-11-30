@@ -5,7 +5,7 @@
 
 // program constants
 #define NUM_OF_TRIALS 1
-#define NUM_OF_EVALS 3000
+#define NUM_OF_EVALS 1020
 #define OPENGL_TXT "cubes_hc.txt"
 
 // global macros

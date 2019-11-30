@@ -13,13 +13,15 @@ int main() {
     srand(time(nullptr));
 
     // use threads for performance
-    thread t[NUM_OF_TRIALS];
-    for (int i = 0; i < NUM_OF_TRIALS; i++) {
-        t[i] = thread(loop);
-    }
-    for (int i = 0; i < NUM_OF_TRIALS; i++) {
-        t[i].join();
-    }
+//    thread t[NUM_OF_TRIALS];
+//    for (int i = 0; i < NUM_OF_TRIALS; i++) {
+//        t[i] = thread(loop);
+//    }
+//    for (int i = 0; i < NUM_OF_TRIALS; i++) {
+//        t[i].join();
+//    }
+
+    loop();
 
     return 0;
 }
@@ -77,9 +79,9 @@ void loop() {
         tournament_selection(parent, child, all);
 
         // write diversity to a file
-        calculate_diversity(parent, diversity_file);
+//        calculate_diversity(parent, diversity_file);
 
-        if (eval % 300 == 0) {
+        if (eval % POP_SIZE == 0) {
             for (int i = 0; i < POP_SIZE; i++) {
                 cout << eval << ": " << parent[i].fitness << "\n";
             }

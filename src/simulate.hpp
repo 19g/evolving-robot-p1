@@ -22,6 +22,7 @@
 // 15000 = 3 cycles (for omega = 4pi and DT = 0.0001)
 #define U_S 1.0
 #define U_K 0.8
+#define Z_PENALTY 5
 
 // opengl
 #define NUM_OPEN_GL_CUBE_PTS 36

@@ -6,14 +6,14 @@
 // program constants
 #define NUM_OF_TRIALS 1
 #define POP_SIZE 60 // needs to be even number
-#define NUM_OF_EVALS 10000
+#define NUM_OF_EVALS 1020
 #define DIVERSITY_TXT "diversity.txt"
 #define OPENGL_TXT "cubes_ga.txt"
 
 // global macros
 #define PI 3.14159
 #define OMEGA (4*PI)
-#define INITIAL_HEIGHT 0.000000001
+#define INITIAL_HEIGHT 0.0000001
 #define PROB_OF_MUT 0.3
 #define PROB_PER_PARAM 0.333333
 #define MIN_SWING 0.9
