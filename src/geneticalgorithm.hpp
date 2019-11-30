@@ -12,7 +12,7 @@
 
 // global macros
 #define PI 3.14159
-#define OMEGA (4*PI)
+#define OMEGA (8*PI)
 #define INITIAL_HEIGHT 0.000000001
 #define PROB_OF_MUT 0.3
 #define PROB_PER_PARAM 0.333333

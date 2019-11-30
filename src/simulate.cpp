@@ -5,7 +5,7 @@
 
 using namespace std;
 
-void simulation_loop(Cube &individual, bool opengl) {
+double simulation_loop(Cube &individual, bool opengl) {
     // initialize files
     ofstream energy_file;
     energy_file.open(ENERGY_TXT);
@@ -92,7 +92,7 @@ void simulation_loop(Cube &individual, bool opengl) {
     //individual.fitness = dist_travelled - dist_travelled_z;
     individual.fitness += dist_travelled_x*num_iterations; // - abs(dist_travelled_z);
     individual.fitness -= abs(dist_travelled_y)*(num_iterations/2);
-    cout << "dist travelled (x-dir): " << dist_travelled_x << endl;
+    //cout << "dist travelled (x-dir): " << dist_travelled_x << endl;
 
     // write energy to file
     if (opengl) {
@@ -121,6 +121,8 @@ void simulation_loop(Cube &individual, bool opengl) {
     }
     opengl_file.close();
     energy_file.close();
+
+    return dist_travelled_x;
 }
 
 double dist(vector<double> a, vector<double> b) {

@@ -26,12 +26,15 @@ int main() {
 void loop() {
     // begin timer
     clock_t begin = clock();
+    double iter_max_dist = 0;  // max distance of this iteration
 
     // initialize parent population randomly
     vector<Cube> parent(POP_SIZE);
     for (int i = 0; i < POP_SIZE; i++) {
         parent[i] = initialize_cube();
-        simulation_loop(parent[i], false);
+        double temp = simulation_loop(parent[i], false);
+        if (temp > iter_max_dist)
+            iter_max_dist = temp;
     }
 
 //    for (int i = 0; i < POP_SIZE; i++) {
@@ -75,6 +78,7 @@ void loop() {
             for (int i = 0; i < POP_SIZE; i++) {
                 cout << eval << ": " << parent[i].fitness << "\n";
             }
+            cout << "distance travelled (x-dir): " << iter_max_dist << endl;
         }
     }
 

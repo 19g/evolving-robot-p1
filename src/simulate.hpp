@@ -19,7 +19,7 @@
 #define DT 0.0001
 #define V_DAMP_CONST 0.999 //0.999999
 #define NUM_OF_ITERATIONS 15000
-// 15000 = 3 cycles (for omega = 4pi and DT = 0.0001)
+// 15000 = 6 cycles (for omega = 8pi and DT = 0.0001)
 #define U_S 1.0
 #define U_K 0.8
 
@@ -53,7 +53,7 @@ struct Cube {
 };
 
 // perform the physics simulation
-void simulation_loop(Cube &, bool);
+double simulation_loop(Cube &, bool);
 // initialize cube with masses and springs
 void initialize_cube(std::vector<Mass> &, std::vector<Spring> &);
 // calculate distance between two 3D points
