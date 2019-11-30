@@ -60,7 +60,10 @@ void loop() {
 
         // get fitness of population
         for (int i = 0; i < POP_SIZE; i++) {
-            simulation_loop(child[i], false);
+            double temp = simulation_loop(child[i], false);
+            if (temp > iter_max_dist)
+                iter_max_dist = temp;
+
         }
 
         // selection
