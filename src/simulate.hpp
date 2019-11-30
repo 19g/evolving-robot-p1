@@ -55,7 +55,7 @@ struct Cube {
 };
 
 // perform the physics simulation
-void simulation_loop(Cube &, bool);
+void simulation_loop(Cube &, int, bool);
 // initialize cube with masses and springs
 void initialize_cube(std::vector<Mass> &, std::vector<Spring> &);
 // calculate distance between two 3D points

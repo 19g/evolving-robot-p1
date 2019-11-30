@@ -38,7 +38,7 @@ void loop(int thread_num) {
     vector<Cube> parent(POP_SIZE);
     for (int i = 0; i < POP_SIZE; i++) {
         parent[i] = initialize_cube();
-        simulation_loop(parent[i], false);
+        simulation_loop(parent[i], thread_num, false);
     }
 
 //    for (int i = 0; i < POP_SIZE; i++) {
@@ -64,7 +64,7 @@ void loop(int thread_num) {
 
         // get fitness of population
         for (int i = 0; i < POP_SIZE; i++) {
-            simulation_loop(child[i], false);
+            simulation_loop(child[i], thread_num, false);
         }
 
         // selection
@@ -119,7 +119,7 @@ void loop(int thread_num) {
     cout << "MAX FITNESS: " << parent[max_fit_index].fitness << "\n";
 
     // output to file for opengl
-    simulation_loop(parent[max_fit_index], true);
+    simulation_loop(parent[max_fit_index], thread_num, true);
 
     // close files
     learning_file.close();

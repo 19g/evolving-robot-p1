@@ -5,12 +5,12 @@
 
 using namespace std;
 
-void simulation_loop(Cube &individual, bool opengl) {
+void simulation_loop(Cube &individual, int thread_num, bool opengl) {
     // initialize files
     ofstream energy_file;
-    energy_file.open(ENERGY_TXT);
+    energy_file.open(to_string(thread_num) + ENERGY_TXT);
     ofstream opengl_file;
-    opengl_file.open(OPENGL_TXT);
+    opengl_file.open(to_string(thread_num) + OPENGL_TXT);
 
     // declare variables
     double T = 0.0;
@@ -90,7 +90,7 @@ void simulation_loop(Cube &individual, bool opengl) {
     // assign fitness equal to distance travelled in the positive x direction
     // TODO: maybe change later to be a function of dist_travelled as well?
     //individual.fitness = dist_travelled - dist_travelled_z;
-    individual.fitness += dist_travelled_x - (abs(dist_travelled_z) * Z_PENALTY);
+    individual.fitness += dist_travelled_x * num_iterations - (abs(dist_travelled_z) * Z_PENALTY);
 //    individual.fitness -= abs(dist_travelled_y) * (num_iterations / 2);
 //    cout << "dist travelled (x-dir): " << dist_travelled_x << endl;
 
