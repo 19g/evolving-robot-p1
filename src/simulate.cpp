@@ -53,10 +53,10 @@ void simulation_loop(Cube &individual, int thread_num, bool opengl) {
         // update position of cube
         update_position(mass, spring, force);
 
-        // subtract average height from fitness:
+        // subtract height from fitness:
         for (int i=0; i<NUM_OF_MASSES; i++) {
-            if (mass[i].p[2] > L0_SIDE*1.5)
-                individual.fitness -= (mass[i].p[2]-(L0_SIDE*1.5))/NUM_OF_MASSES;
+            if (mass[i].p[2] > L0_SIDE)
+                individual.fitness -= (mass[i].p[2])/NUM_OF_MASSES;
         }
 
         // calculate energy
