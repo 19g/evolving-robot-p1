@@ -15,11 +15,11 @@
 
 // world variables
 #define G 9.807
-#define OMEGA (8*PI)
+#define OMEGA (4*PI)
 #define K_GROUND 100000.0
 #define DT 0.0001
 #define V_DAMP_CONST 0.999 //0.999999
-#define NUM_OF_ITERATIONS 7500
+#define NUM_OF_ITERATIONS 15000
 // 15000 = 3 cycles (for omega = 4pi and DT = 0.0001)
 #define U_S 1.0
 #define U_K 0.8

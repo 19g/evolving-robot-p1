@@ -53,10 +53,10 @@ void simulation_loop(Cube &individual, int thread_num, bool opengl) {
         // update position of cube
         update_position(mass, spring, force);
 
-        // subtract average height from fitness:
+        // subtract height from fitness:
         for (int i=0; i<NUM_OF_MASSES; i++) {
-            if (mass[i].p[2] > L0_SIDE*1.5)
-                individual.fitness -= (mass[i].p[2]-(L0_SIDE*1.5))/NUM_OF_MASSES;
+            if (mass[i].p[2] > L0_SIDE)
+                individual.fitness -= (mass[i].p[2])/NUM_OF_MASSES;
         }
 
         // calculate energy
@@ -90,8 +90,8 @@ void simulation_loop(Cube &individual, int thread_num, bool opengl) {
     // assign fitness equal to distance travelled in the positive x direction
     // TODO: maybe change later to be a function of dist_travelled as well?
     //individual.fitness = dist_travelled - dist_travelled_z;
-    individual.fitness = dist_travelled_x * num_iterations - (abs(dist_travelled_z) * Z_PENALTY);
-//    individual.fitness -= abs(dist_travelled_y) * (num_iterations / 2);
+    individual.fitness += dist_travelled_x * num_iterations - (abs(dist_travelled_z) * Z_PENALTY);
+    individual.fitness -= abs(dist_travelled_y) * (num_iterations / 2);
 //    cout << "dist travelled (x-dir): " << dist_travelled_x << endl;
     individual.distance = dist_travelled_x;
 
