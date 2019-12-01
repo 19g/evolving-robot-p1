@@ -40,7 +40,7 @@ void random_search(int thread_num) {
     for (int eval = 0; eval <= NUM_OF_EVALS; eval++) {
         // initialize offspring
         Cube child = initialize_cube();
-        simulation_loop(child, false);
+        simulation_loop(child, thread_num, false);
 
         if (parent.fitness < child.fitness) {
             parent = child;

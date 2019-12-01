@@ -33,6 +33,8 @@ void loop(int thread_num) {
 //    diversity_file.open(DIVERSITY_TXT);
     ofstream learning_file;
     learning_file.open(to_string(thread_num) + LEARNING_TXT);
+    ofstream robot_parameters_file;
+    robot_parameters_file.open(to_string(thread_num) + "robot_parameters.txt");
 
     // initialize parent population randomly
     vector<Cube> parent(POP_SIZE);
@@ -115,6 +117,14 @@ void loop(int thread_num) {
         }
     }
 
+    // output robot parameters to file
+    for (int i = 0; i < NUM_OF_SPRINGS; i++) {
+        robot_parameters_file << i << ":\n";
+        robot_parameters_file << "k: " << parent[max_fit_index].spring[i].k << "\n";
+        robot_parameters_file << "b: " << parent[max_fit_index].spring[i].b << "\n";
+        robot_parameters_file << "c: " << parent[max_fit_index].spring[i].c << "\n\n";
+    }
+
     cout << "MAX FITNESS: " << parent[max_fit_index].fitness << "\n";
 
     // output to file for opengl
@@ -123,6 +133,7 @@ void loop(int thread_num) {
     // close files
     learning_file.close();
 //    diversity_file.close();
+    robot_parameters_file.close();
 }
 
 Cube initialize_cube() {
