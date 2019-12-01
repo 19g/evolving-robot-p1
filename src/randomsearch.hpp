@@ -4,8 +4,8 @@
 #include "simulate.hpp"
 
 // program constants
-#define NUM_OF_TRIALS 1
-#define NUM_OF_EVALS 10000
+#define NUM_OF_TRIALS 10
+#define NUM_OF_EVALS 1000
 #define OPENGL_TXT "cubes_rand.txt"
 #define LEARNING_TXT "learning_rand.txt"
 

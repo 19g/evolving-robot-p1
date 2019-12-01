@@ -93,6 +93,7 @@ void simulation_loop(Cube &individual, int thread_num, bool opengl) {
     individual.fitness += dist_travelled_x * num_iterations - (abs(dist_travelled_z) * Z_PENALTY);
     individual.fitness -= abs(dist_travelled_y) * (num_iterations / 2);
 //    cout << "dist travelled (x-dir): " << dist_travelled_x << endl;
+    individual.distance = dist_travelled_x;
 
     // write energy to file
     if (opengl) {

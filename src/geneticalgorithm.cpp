@@ -33,6 +33,8 @@ void loop(int thread_num) {
 //    diversity_file.open(DIVERSITY_TXT);
     ofstream learning_file;
     learning_file.open(to_string(thread_num) + LEARNING_TXT);
+    ofstream robot_parameters_file;
+    robot_parameters_file.open(to_string(thread_num) + "robot_parameters.txt");
 
     // initialize parent population randomly
     vector<Cube> parent(POP_SIZE);
@@ -45,7 +47,7 @@ void loop(int thread_num) {
 //        print_mass(parent[i].mass[0]);
 //    }
     // evolutionary loop
-    for (int eval = 0; eval < NUM_OF_EVALS; eval+=POP_SIZE) {
+    for (int eval = 0; eval <= NUM_OF_EVALS; eval+=POP_SIZE) {
         // get random order of individuals for crossover
         vector<int> order = randomize_array_of_springs();
         // initialize offspring
@@ -90,15 +92,14 @@ void loop(int thread_num) {
         }
 
         // write learning curve to file
-        learning_file << parent[max_fit_index].fitness;
-        if (eval != NUM_OF_EVALS - 1) {
-            learning_file << ",";
+        for (int i = 0; i < POP_SIZE; i++) {
+            learning_file << parent[max_fit_index].distance << ",";
         }
 
         // print fitnesses of population
         if (eval % POP_SIZE == 0) {
             for (int i = 0; i < POP_SIZE; i++) {
-                cout << eval << ": " << parent[i].fitness << "\n";
+                cout << eval << ": " << parent[i].distance << "\n";
             }
         }
     }
@@ -116,6 +117,14 @@ void loop(int thread_num) {
         }
     }
 
+    // output robot parameters to file
+    for (int i = 0; i < NUM_OF_SPRINGS; i++) {
+        robot_parameters_file << i << ":\n";
+        robot_parameters_file << "k: " << parent[max_fit_index].spring[i].k << "\n";
+        robot_parameters_file << "b: " << parent[max_fit_index].spring[i].b << "\n";
+        robot_parameters_file << "c: " << parent[max_fit_index].spring[i].c << "\n\n";
+    }
+
     cout << "MAX FITNESS: " << parent[max_fit_index].fitness << "\n";
 
     // output to file for opengl
@@ -124,6 +133,7 @@ void loop(int thread_num) {
     // close files
     learning_file.close();
 //    diversity_file.close();
+    robot_parameters_file.close();
 }
 
 Cube initialize_cube() {

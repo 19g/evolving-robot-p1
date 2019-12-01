@@ -34,20 +34,20 @@ void random_search(int thread_num) {
 
     // initialize parent population randomly
     Cube parent = initialize_cube();
-    simulation_loop(parent, false);
+    simulation_loop(parent, thread_num, false);
 
     // random search loop
-    for (int eval = 0; eval < NUM_OF_EVALS; eval++) {
+    for (int eval = 0; eval <= NUM_OF_EVALS; eval++) {
         // initialize offspring
         Cube child = initialize_cube();
-        simulation_loop(child, false);
+        simulation_loop(child, thread_num, false);
 
         if (parent.fitness < child.fitness) {
             parent = child;
         }
 
         // write to file
-        learning_file << parent.fitness;
+        learning_file << parent.distance;
         if (eval != NUM_OF_EVALS - 1) {
             learning_file << ",";
         }
@@ -64,7 +64,7 @@ void random_search(int thread_num) {
     cout << "iter/sec: " << iters_per_sec << "\n";
 
     // output to file for opengl
-    simulation_loop(parent, true);
+    simulation_loop(parent, thread_num, true);
 
     // close file
     learning_file.close();
