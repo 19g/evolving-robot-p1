@@ -45,7 +45,7 @@ void loop(int thread_num) {
 //        print_mass(parent[i].mass[0]);
 //    }
     // evolutionary loop
-    for (int eval = 0; eval < NUM_OF_EVALS; eval+=POP_SIZE) {
+    for (int eval = 0; eval <= NUM_OF_EVALS; eval+=POP_SIZE) {
         // get random order of individuals for crossover
         vector<int> order = randomize_array_of_springs();
         // initialize offspring
@@ -90,15 +90,14 @@ void loop(int thread_num) {
         }
 
         // write learning curve to file
-        learning_file << parent[max_fit_index].fitness;
-        if (eval != NUM_OF_EVALS - 1) {
-            learning_file << ",";
+        for (int i = 0; i < POP_SIZE; i++) {
+            learning_file << parent[max_fit_index].distance << ",";
         }
 
         // print fitnesses of population
         if (eval % POP_SIZE == 0) {
             for (int i = 0; i < POP_SIZE; i++) {
-                cout << eval << ": " << parent[i].fitness << "\n";
+                cout << eval << ": " << parent[i].distance << "\n";
             }
         }
     }

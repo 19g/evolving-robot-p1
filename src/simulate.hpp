@@ -52,6 +52,7 @@ struct Cube {
     std::vector<Mass> mass;
     std::vector<Spring> spring;
     double fitness;
+    double distance;
 };
 
 // perform the physics simulation
