@@ -54,7 +54,7 @@ void hill_climber(int thread_num) {
         }
 
         if (eval % 1 == 0) {
-            cout << eval << ": " << parent.fitness << "\n";
+            cout << eval << ": " << parent.distance << "\n";
         }
     }
 

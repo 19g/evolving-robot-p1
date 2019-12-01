@@ -4,7 +4,7 @@
 #include "simulate.hpp"
 
 // program constants
-#define NUM_OF_TRIALS 10
+#define NUM_OF_TRIALS 3
 #define POP_SIZE 100 // needs to be even number
 #define NUM_OF_EVALS 10000
 #define DIVERSITY_TXT "diversity.txt"
