@@ -5,7 +5,11 @@
 
 using namespace std;
 
-void simulation_loop(Cube &individual, int thread_num, bool opengl) {
+
+void simulation_loop(Cube &individual, 
+                     int thread_num, 
+                     bool opengl, 
+                     Gpu_info* info) {
     // initialize files
     ofstream energy_file;
     energy_file.open(to_string(thread_num) + ENERGY_TXT);
@@ -13,7 +17,7 @@ void simulation_loop(Cube &individual, int thread_num, bool opengl) {
     opengl_file.open(to_string(thread_num) + OPENGL_TXT);
 
     // declare variables
-    double T = 0.0;
+    float T = 0.0;
     vector<Mass> mass = individual.mass;
     vector<Spring> spring = individual.spring;
     vector<double> kinetic_energy;
@@ -44,7 +48,10 @@ void simulation_loop(Cube &individual, int thread_num, bool opengl) {
         vector<vector<double>> force(NUM_OF_MASSES, vector<double>(DIMENSIONS));
 
         // breathing cube
-        breathing_cube(spring, T);
+        //cout << spring[0].l0 << endl;
+        //breathing_cube(spring, T);
+        breathing_cube_gpu(&spring[0], T, info);
+        //cout << "after: " << spring[0].l0 << endl;
         // calculate force on each spring
         calculate_force(mass, spring, force);
 //        add_external_force(mass, spring, force);
@@ -124,7 +131,7 @@ void simulation_loop(Cube &individual, int thread_num, bool opengl) {
     energy_file.close();
 }
 
-double dist(vector<double> a, vector<double> b) {
+float dist(vector<double> a, vector<double> b) {
     return sqrt(pow(b[0]-a[0],2) + pow(b[1]-a[1],2) + pow(b[2]-a[2],2));
 }
 
@@ -279,10 +286,109 @@ void write_to_opengl_file(vector<Mass> &mass, ofstream &opengl_file) {
     opengl_file << "\n";
 }
 
-void breathing_cube(vector<Spring> &spring, double T) {
+void breathing_cube(vector<Spring> &spring, float T) {
     for (int i = 0; i < NUM_OF_SPRINGS; i++) {
         spring[i].l0 = spring[i].a + spring[i].b * sin(OMEGA * T + spring[i].c);
     }
+}
+
+void breathing_cube_gpu(Spring* springs, float T, Gpu_info* info) {
+    info->err = clEnqueueWriteBuffer(info->commands, 
+                                     info->input_bc, 
+                                     CL_TRUE, 
+                                     0, 
+                                     sizeof(Spring) * NUM_OF_SPRINGS, 
+                                     springs, 
+                                     0, 
+                                     NULL, 
+                                     NULL
+                                    );
+
+    //cout << "err after write buffer: " << info->err << endl;
+
+
+    info->err = 0;
+    info->err  = clSetKernelArg(info->kernel_bc, 
+                                0, 
+                                sizeof(cl_mem), 
+                                &(info->input_bc)
+                               );
+    //cout << "err after set args: " << info->err << endl;
+    if (info->err != 0) exit(1);
+
+    float w = OMEGA; 
+    info->err |= clSetKernelArg(info->kernel_bc, 
+                                1, 
+                                sizeof(cl_float), 
+                                &w
+                               );
+    info->err |= clSetKernelArg(info->kernel_bc, 
+                                2, 
+                                sizeof(cl_float), 
+                                &T
+                               );
+    int num_springs = NUM_OF_SPRINGS;
+    info->err |= clSetKernelArg(info->kernel_bc, 
+                                3, 
+                                sizeof(cl_int), 
+                                &num_springs
+                               );
+    //cout << "err after set args: " << info->err << endl;
+    if (info->err != 0) exit(1);
+
+    
+
+    info->err = clGetKernelWorkGroupInfo(info->kernel_bc, 
+                                         info->device_id, 
+                                         CL_KERNEL_WORK_GROUP_SIZE, 
+                                         sizeof(info->local_bc), 
+                                         &(info->local_bc), 
+                                         NULL
+                                        );
+    if (info->err != 0) {
+        cout << "kernel workgroup info err\n";
+        exit(1);
+    }
+
+    //cout << "CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS: " << CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS << endl;
+    //cout << "CL_KERNEL_WORK_GROUP_SIZE: " << CL_KERNEL_WORK_GROUP_SIZE << endl;
+    //cout << "sizeof(Spring) :" << sizeof(Spring) <<endl;
+    //cout << "local size: " << info->local_bc << endl;
+    //cout << "num springs (global): " << NUM_OF_SPRINGS << endl;
+
+    info->global_bc = NUM_OF_SPRINGS;
+    info->err = clEnqueueNDRangeKernel(info->commands, 
+                                       info->kernel_bc, 
+                                       1, 
+                                       NULL, 
+                                       &(info->global_bc), 
+                                       NULL, 
+                                       0, 
+                                       NULL, 
+                                       NULL
+                                      );
+    if (info->err != 0) {
+        cout << "enqueue kernel err: " << info->err << endl;
+        exit(1);
+    }
+
+
+    clFinish(info->commands);
+    info->err = clEnqueueReadBuffer(info->commands, 
+                                    info->input_bc, 
+                                    CL_TRUE, 
+                                    0, 
+                                    sizeof(float) * NUM_OF_SPRINGS, 
+                                    springs, 
+                                    0, 
+                                    NULL, 
+                                    NULL 
+                                   );
+    if (info->err != 0) {
+        cout << "read buffer error\n";
+        exit(1);
+    }
+
 }
 
 /* 

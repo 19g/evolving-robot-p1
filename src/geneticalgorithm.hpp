@@ -4,12 +4,15 @@
 #include "simulate.hpp"
 
 // program constants
-#define NUM_OF_TRIALS 10
-#define POP_SIZE 100 // needs to be even number
-#define NUM_OF_EVALS 10000
+#define NUM_OF_TRIALS 1
+#define POP_SIZE 2 // needs to be even number
+#define NUM_OF_EVALS 1
 #define DIVERSITY_TXT "diversity.txt"
 #define OPENGL_TXT "cubes_ga.txt"
 #define LEARNING_TXT "learning_ga.txt"
+
+#define ERR_LOG_YES true
+#define ERR_LOG_NO false
 
 // global macros
 #define PI 3.14159
@@ -37,6 +40,8 @@ void crossover(Cube &, Cube &);
 void mutation(Cube &);
 void tournament_selection(std::vector<Cube> &, std::vector<Cube> &, std::vector<Cube> &);
 void calculate_diversity(std::vector<Cube> &, std::ofstream &);
+void setup_gpu(Gpu_info*);
 
+bool parse_file_into_str(const char*, char*, int);
 
 #endif //EVOLVING_ROBOT_GENETIC_ALGORITHM_HPP

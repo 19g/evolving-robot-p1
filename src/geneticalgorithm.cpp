@@ -13,13 +13,16 @@ int main() {
     srand(time(nullptr));
 
     // use threads for performance
+    /*
     thread t[NUM_OF_TRIALS];
     for (int i = 0; i < NUM_OF_TRIALS; i++) {
         t[i] = thread(loop, i);
     }
     for (int i = 0; i < NUM_OF_TRIALS; i++) {
         t[i].join();
-    }
+    }*/
+
+    loop(0);
 
     return 0;
 }
@@ -36,11 +39,15 @@ void loop(int thread_num) {
     ofstream robot_parameters_file;
     robot_parameters_file.open(to_string(thread_num) + "robot_parameters.txt");
 
+    // setup gpu:
+    Gpu_info* gi = (Gpu_info*)malloc(sizeof(Gpu_info));
+    setup_gpu(gi);
+
     // initialize parent population randomly
     vector<Cube> parent(POP_SIZE);
     for (int i = 0; i < POP_SIZE; i++) {
         parent[i] = initialize_cube();
-        simulation_loop(parent[i], thread_num, false);
+        simulation_loop(parent[i], thread_num, false, gi);
     }
 
 //    for (int i = 0; i < POP_SIZE; i++) {
@@ -66,7 +73,7 @@ void loop(int thread_num) {
 
         // get fitness of population
         for (int i = 0; i < POP_SIZE; i++) {
-            simulation_loop(child[i], thread_num, false);
+            simulation_loop(child[i], thread_num, false, gi);
         }
 
         // selection
@@ -128,7 +135,7 @@ void loop(int thread_num) {
     cout << "MAX FITNESS: " << parent[max_fit_index].fitness << "\n";
 
     // output to file for opengl
-    simulation_loop(parent[max_fit_index], thread_num, true);
+    simulation_loop(parent[max_fit_index], thread_num, true, gi);
 
     // close files
     learning_file.close();
@@ -136,13 +143,109 @@ void loop(int thread_num) {
     robot_parameters_file.close();
 }
 
+void setup_gpu(Gpu_info* info) {
+    //info = malloc(sizeof(Gpu_info));
+    clGetPlatformIDs(1, &(info->platform), NULL);
+
+    info->err = clGetDeviceIDs(info->platform,
+                               CL_DEVICE_TYPE_GPU, 
+                               1, 
+                               &(info->device_id), 
+                               NULL
+                              );
+    cout << "err after get device ids: " << info->err << endl;
+
+    info->context = clCreateContext(0,
+                                    1, 
+                                    &(info->device_id),
+                                    NULL, 
+                                    NULL, 
+                                    &(info->err)
+                                   );
+    cout << "err after create context: " << info->err << endl;
+
+    info->commands = clCreateCommandQueue(info->context,
+                                          info->device_id, 
+                                          0, 
+                                          &(info->err)
+                                         );
+
+    cout << "err after create command: " << info->err << endl;
+
+    // read program from file and convert to string:
+    char* kernel_source = (char*)malloc(sizeof(char)*2048);
+    parse_file_into_str("breathing_cube.cl", 
+                        kernel_source, 
+                        sizeof(char)*2048
+                       );
+
+    info->program = clCreateProgramWithSource(info->context, 
+                                              1, 
+                                              (const char**)&kernel_source, 
+                                              NULL, 
+                                              &(info->err)
+                                             );
+    cout << "err after create program: " << info->err << endl;
+    free(kernel_source);
+    info->err = clBuildProgram(info->program, 
+                               0, 
+                               NULL, 
+                               "-cl-finite-math-only", 
+                               NULL, 
+                               NULL
+                              );
+
+    cout << "err after build program: " << info->err << endl;
+
+    if (info->err != 0) {
+		// Determine the size of the log
+    	size_t log_size;
+    	clGetProgramBuildInfo(info->program, info->device_id, CL_PROGRAM_BUILD_LOG, 0, NULL, &log_size);
+
+    	// Allocate memory for the log
+    	char *log = (char *) malloc(log_size);
+
+    	// Get the log
+    	clGetProgramBuildInfo(info->program, info->device_id, CL_PROGRAM_BUILD_LOG, log_size, log, NULL);
+
+    	// Print the log
+    	printf("%s\n", log);
+		exit(1);
+    }
+
+
+    info->kernel_bc = clCreateKernel(info->program, 
+                                     "breathing_cube", 
+                                     &(info->err)
+                                    );
+    cout << "err after create kernel: " << info->err << endl;
+
+
+    // cl_mem and friends are typedef pointers to structs
+    info->input_bc = clCreateBuffer(info->context,  
+                                    CL_MEM_READ_WRITE,  
+                                    sizeof(Spring) * NUM_OF_SPRINGS, 
+                                    NULL, 
+                                    NULL
+                                   );
+    cout << "err after create buffer: " << info->err << endl;
+
+    /*
+    info->output_bc = clCreateBuffer(info->context, 
+                                     CL_MEM_WRITE_ONLY, 
+                                     sizeof(float) * NUM_OF_SPRINGS, 
+                                     NULL, 
+                                     NULL
+                                    );*/
+}
+
 Cube initialize_cube() {
     // random variable generation
     random_device rd;
     mt19937 mt(rd());
 //    uniform_real_distribution<double> a_val(MIN_A, MAX_A);
-    uniform_real_distribution<double> b_val(MIN_B, MAX_B);
-    uniform_real_distribution<double> c_val(MIN_C, MAX_C);
+    uniform_real_distribution<float> b_val(MIN_B, MAX_B);
+    uniform_real_distribution<float> c_val(MIN_C, MAX_C);
     uniform_real_distribution<double> k_spring_val(MIN_K_SPRING, MAX_K_SPRING);
 
     // temp objects
@@ -343,4 +446,30 @@ void calculate_diversity(vector<Cube> &population, ofstream &diversity_file) {
 
     // write diversity to a file
     diversity_file << mse_k + mse_b + mse_c << ",";
+}
+
+bool parse_file_into_str(const char* filename, char* shader_str, int max_len) {
+    FILE* fp;
+    size_t cnt;
+    fp = fopen(filename, "r");
+    if (!fp) {
+        cout << "COULD NOT OPEN FILE" << endl;
+        return false;
+    }
+
+    cnt = fread(shader_str, sizeof(char), max_len-1, fp);
+    if ((int)cnt >= max_len-1) {
+        cout << "FILE WAS TRUNCATED" << endl;
+    }
+
+    if (ferror(fp)) {
+        cout << "FILE ERROR" << endl;
+        fclose(fp);
+        return false;
+    }
+
+    // append \0 to end of file converted to string
+    shader_str[cnt] = '\0';
+    fclose(fp);
+    return true;
 }

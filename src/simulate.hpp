@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <cmath>
+#include <OpenCL/opencl.h>
 
 // cube variables
 #define WEIGHT_PER_MASS 0.1
@@ -38,15 +39,15 @@ struct Mass {
     std::vector<double> a; // acceleration std::vector in m/s^2
 };
 
-struct Spring {
-    double k; // spring constant in N/m
-    double l0; // original rest length in m
-    int m1; // index of first mass object in spring
-    int m2; // index of second mass object in spring
-    double a; // a + b*sin(wt+c) + d*sin(2wt+e)
-    double b; // a + b*sin(wt+c) + d*sin(2wt+e)
-    double c; // a + b*sin(wt+c) + d*sin(2wt+e)
-};
+typedef struct Spring {
+    cl_double k; // spring constant in N/m
+    cl_float l0; // original rest length in m
+    cl_int m1; // index of first mass object in spring
+    cl_int m2; // index of second mass object in spring
+    cl_float a; // a + b*sin(wt+c) + d*sin(2wt+e)
+    cl_float b; // a + b*sin(wt+c) + d*sin(2wt+e)
+    cl_float c; // a + b*sin(wt+c) + d*sin(2wt+e)
+} __attribute__ ((aligned (32))) Spring;
 
 struct Cube {
     std::vector<Mass> mass;
@@ -55,12 +56,30 @@ struct Cube {
     double distance;
 };
 
+typedef struct Gpu_info {
+
+    cl_int err;
+    size_t global_bc;
+    size_t local_bc;
+
+    cl_platform_id platform;
+    cl_device_id device_id;             // compute device id
+    cl_context context;                 // compute context
+    cl_command_queue commands;          // compute command queue
+    cl_program program;                 // compute program
+    cl_kernel kernel_bc;                // compute kernel
+
+    cl_mem input_bc;                   // device memory used for the input array
+    //cl_mem output_bc;                  // device memory used for the output array
+
+} Gpu_info;
+
 // perform the physics simulation
-void simulation_loop(Cube &, int, bool);
+void simulation_loop(Cube &, int, bool, Gpu_info*);
 // initialize cube with masses and springs
 void initialize_cube(std::vector<Mass> &, std::vector<Spring> &);
 // calculate distance between two 3D points
-double dist(std::vector<double>, std::vector<double>);
+float dist(std::vector<double>, std::vector<double>);
 // calculate force from springs, gravity
 void calculate_force(std::vector<Mass> &, std::vector<Spring> &, std::vector<std::vector<double>> &);
 // add external forces
@@ -78,7 +97,8 @@ void print_mass(Mass &);
 // write to opengl file
 void write_to_opengl_file(std::vector<Mass> &, std::ofstream &);
 // breathing cube function
-void breathing_cube(std::vector<Spring> &, double);
+void breathing_cube(std::vector<Spring> &, float);
+void breathing_cube_gpu(Spring*, float, Gpu_info*);
 
 // calculate center of mass of a std::vector of masses:
 std::vector<double> calculate_center_of_mass(std::vector<Mass> &);
