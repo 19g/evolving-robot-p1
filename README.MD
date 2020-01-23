@@ -1,7 +1,2 @@
 #README.MD
-###To-Do
-*High Priority*
-- add friction
-
-*Low Priority*
-- thread stuff
+Evolves a walking robot made from a combination of uniform cubes.
